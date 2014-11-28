@@ -1,25 +1,32 @@
 package Gruppe7.ConnectFour;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 /**
  *
  * @author Christoph
  */
 public abstract class Player 
 {
-    protected int thisPlayer; //initialized @ constructor
-    protected int enemyPlayer;
-    public static Token[][] board = new Token[7][6]; //first x, then y coordinate
-    protected GameBoard gb;
+    protected Player thisPlayer; //initialized @ constructor
+    protected Player enemyPlayer;
     
-    public abstract int getColumn();
+    public enum ComputerLevel { Low, Medium, High };
+    
+    public abstract int getColumn(Token[][] board);
 
-    public Player(GameBoard gb)
+    protected int insertToken(int column, Token[][] board)
     {
-        this.gb = gb;
+        int rowCount = 0;
+        Token[] insertingColumn = board[column];
+        for (Token row : insertingColumn)
+        {
+            if (row.getPlayer() == null)
+            {
+                return rowCount;
+            }
+            
+            rowCount++;
+        }
+        return -1; // Row is full of tokens
     }
     
     // ----- helper method: check if there are X in a Row --------
@@ -117,7 +124,7 @@ public abstract class Player
         return false;
     }
 
-    protected boolean isBoardEmpty()
+    protected boolean isBoardEmpty(Token[][] board)
     {
         for (int i = 0; i < board.length; i++)
         {

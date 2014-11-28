@@ -9,6 +9,16 @@ package Gruppe7.ConnectFour;
  *
  * @author Christoph
  */
-public class GameBoard {
+public class GameModel {
+    Token[][] board;
     
+    public GameModel()
+    {
+        this.board = new Token[7][6];
+    }
+    
+    public GameModel(int x, int y)
+    {
+        this.board = new Token[x][y];
+    }
 }
