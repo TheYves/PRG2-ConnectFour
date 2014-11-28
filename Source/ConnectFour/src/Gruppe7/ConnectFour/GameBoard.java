@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Gruppe7;
+package Gruppe7.ConnectFour;
 
 /**
  *
  * @author Christoph
  */
-public class Token {
+public class GameBoard {
     
 }
