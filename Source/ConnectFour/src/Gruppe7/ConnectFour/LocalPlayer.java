@@ -9,12 +9,10 @@ package Gruppe7.ConnectFour;
  *
  * @author Christoph
  */
-public class Human extends Player {
-    String ip = "127.0.0.1";
-    String nickname = "Player";
+public class LocalPlayer extends Player {
 
     @Override
-    public int getColumn(Token[][] board) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int makeMove(int previousEnemyColumn) {
+        throw new UnsupportedOperationException("Ask UI for next move."); //To change body of generated methods, choose Tools | Templates.
     }
 }

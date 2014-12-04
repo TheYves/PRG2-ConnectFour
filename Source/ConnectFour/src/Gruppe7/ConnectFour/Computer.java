@@ -13,15 +13,13 @@ public class Computer extends Player {
       
     private ComputerLevel level = ComputerLevel.Low;
     
-    public Computer(Player thisPlayer, Player enemyPlayer, GameModel game, ComputerLevel level)
+    public Computer(GameModel game, ComputerLevel level)
     {
-        this.thisPlayer = thisPlayer;
-        this.enemyPlayer = enemyPlayer;
         this.level = level;
     }
 
     @Override
-    public int getColumn(Token[][] board)
+    public int makeMove(int previousEnemyColumn)
     {
         Random grn = new Random();
         
@@ -159,5 +157,10 @@ public class Computer extends Player {
         }
         
         return grn.nextInt(board.length);
+    }
+
+    @Override
+    public int getColumn(GameBoard board) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
