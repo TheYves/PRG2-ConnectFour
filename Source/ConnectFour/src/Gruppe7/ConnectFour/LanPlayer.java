@@ -13,18 +13,16 @@ public class LanPlayer extends Player implements Runnable{
 
     private final boolean isHost;
     private Thread thread;
+    private String ip;
     
-    public LanPlayer(boolean isHost){
+    public LanPlayer(String ip, boolean isHost, TokenColor tokenColor){
+        super("Lan Enemy", tokenColor);
         this.isHost = isHost;
+        this.ip = ip;
     }
     
     public boolean isHost(){
         return isHost;
-    }
-    
-    @Override
-    public int makeMove(int previousEnemyColumn) {
-        throw new UnsupportedOperationException("Network stuff."); //To change body of generated methods, choose Tools | Templates.
     }
     
     public void start(){
@@ -34,6 +32,10 @@ public class LanPlayer extends Player implements Runnable{
         }
     }
     
+    /**
+     *
+     * @return Ob der Spieler verbunden ist. Sollte vor jedem neuen Zug geprüft werden.
+     */
     public boolean isConnected(){
        
     }
@@ -44,8 +46,15 @@ public class LanPlayer extends Player implements Runnable{
         while () {
         }
         
+        super.nickname = getnicknckslföfdjskljf();
+        
         notifyAll();
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public int makeMove(GameBoard gameBoard) {
+        throw new UnsupportedOperationException("Network stuff."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

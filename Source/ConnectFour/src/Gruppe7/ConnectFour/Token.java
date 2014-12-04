@@ -10,15 +10,19 @@ package Gruppe7.ConnectFour;
  * @author Christoph
  */
 public class Token {
-    private Player player = null;
+    private TokenColor tokenColor = TokenColor.None;
     
-    public Token(Player player)
+    public Token(TokenColor tokenColor)
     {
-        this.player = player;
+        this.tokenColor = tokenColor;
     }
     
-    public Player getPlayer()
+    public TokenColor getTokenColor()
     {
-        return this.player;
+        return this.tokenColor;
+    }
+    
+    public void setTokenColor(TokenColor tokenColor){
+        this.tokenColor = tokenColor;
     }
 }

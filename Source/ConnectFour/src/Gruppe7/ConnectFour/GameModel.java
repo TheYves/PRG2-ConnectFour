@@ -5,19 +5,41 @@
  */
 package Gruppe7.ConnectFour;
 
+import java.awt.Color;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  *
  * @author Nick
  */
 public class GameModel {
     private GameBoard gameBoard;
-    private Player thisPlayer;
+    private final Player thisPlayer;
     private Player enemyPlayer;
     
     public GameModel(Player thisPlayer){
         this.thisPlayer = thisPlayer;
     }
     
+    /**
+     * Mapping von Spieler zur TokenColor.
+     * @param tokenColor
+     * @return Mapping von Spieler zur TokenColor.
+     */
+    public Player getPlayer(TokenColor tokenColor){
+        if (thisPlayer.getTokenColor() == tokenColor){
+            return thisPlayer;
+        }
+        else{
+            return enemyPlayer;
+        }
+    }
+    
+    /**
+     * Startet ein neues Game gegen den spezifizierten Spieler.
+     * @param enemyPlayer
+     * @return Ob ein Spiel gestartet werden konnte.
+     */
     public boolean startGame(Player enemyPlayer){
         boolean gameReady = true;
         if(enemyPlayer instanceof LanPlayer){
@@ -36,39 +58,66 @@ public class GameModel {
         
         if (gameReady)
         {
-            this.gameBoard = new GameBoard(thisPlayer, enemyPlayer);
+            this.gameBoard = new GameBoard();
             this.enemyPlayer = enemyPlayer;
         }
         
         return gameReady;
     }
     
-    public boolean startGame(Player thisPlayer, Player enemyPlayer, int sizeX, int sizeY){
-        this.gameBoard = new GameBoard(thisPlayer, enemyPlayer, sizeX, sizeY);
-        this.enemyPlayer = enemyPlayer;
-    }
-    
+    /**
+     * 
+     * @return Ob ein Spiel läuft
+     */
     public boolean isGameRunning(){
         return gameBoard != null;
     }
     
+    /**
+     *
+     * @return Ob ein Spiel einen Gewinner hat.
+     */
     public boolean hasWinner(){
-        return gameBoard.checkXInARow(0, 0, 4, thisPlayer) || gameBoard.checkXInARow(0, 0, 4, enemyPlayer);
+        int height = 0;
+        if (gameBoard.getBoard().length > 0)
+        {
+            height = gameBoard.getBoard()[0].length;
+        }
+        
+        for (int column = 0; column < gameBoard.getBoard().length; column++) {
+            for (int row = 0; row < height; row++){
+                if (gameBoard.checkXInARow(column, row, 4, TokenColor.Yellow) 
+                   || (gameBoard.checkXInARow(column, row, 4, TokenColor.Red)))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    protected int insertToken(int column, Player player)
-    {
-        int rowCount = 0;
-        Token[] insertingColumn = this.gameBoard[column];
-        for (Token row : insertingColumn)
-        {
-            if (row.getPlayer() == null)
-            {
-                return rowCount;
-            }
-            
-            rowCount++;
-        }
-        return -1; // Row is full of tokens
+    /**
+     * @return Das Gameboard.
+     */
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
+    /**
+     * @return Den "freundlichen" Spieler.
+     */
+    public Player getThisPlayer() {
+        return thisPlayer;
+    }
+
+    /**
+     * @return Den Gegenspieler.
+     */
+    public Player getEnemyPlayer() {
+        return enemyPlayer;
+    }
+    
+    public String serializeBoard(){
+        throw new NotImplementedException();
     }
 }

@@ -13,14 +13,15 @@ public class Computer extends Player {
       
     private ComputerLevel level = ComputerLevel.Low;
     
-    public Computer(GameModel game, ComputerLevel level)
-    {
+    public Computer(ComputerLevel level, TokenColor tokenColor) {
+        super("Computer", tokenColor);
         this.level = level;
     }
 
     @Override
-    public int makeMove(int previousEnemyColumn)
+    public int makeMove(GameBoard gameBoard)
     {
+        Token[][] board = gameBoard.getBoard();
         Random grn = new Random();
         
         if (this.level == ComputerLevel.Low)
@@ -36,7 +37,7 @@ public class Computer extends Player {
             int row;
 
             // Wenn das Board leer ist, dann immer die Mitte
-            if (isBoardEmpty(board))
+            if (gameBoard.isBoardEmpty())
             {
                 return (int)(board.length / 2) + 1; 
             }
@@ -44,8 +45,8 @@ public class Computer extends Player {
             // Finaler Zug?
             for (column = 0; column < board.length; column++)
             {
-                row = insertToken(column, board);
-                if (row != -1 && checkXInARow(column, row, 4, this.thisPlayer, board))
+                row = gameBoard.getTokenRow(column);
+                if (row != -1 && gameBoard.checkXInARow(column, row, 4, getTokenColor()))
                 {
                     return column; // Gewonnen
                 }
@@ -54,8 +55,8 @@ public class Computer extends Player {
             // Kann der Gegner mit dem einem Zug gewinnen? -> Blockieren
             for (column = 0; column < board.length; column++)
             {
-                row = insertToken(column, board);
-                if (row != -1 && checkXInARow(column, row, 4, enemyPlayer, board))
+                row = gameBoard.getTokenRow(column);
+                if (row != -1 && gameBoard.checkXInARow(column, row, 4, getEnemyColor()))
                 {
                     return column;
                 }
@@ -64,14 +65,14 @@ public class Computer extends Player {
             // Alle Gewinnmoeglichkeiten des Gegners sammeln
             for (column = 0; column < 7; column++)
             {
-                row = insertToken(column, board);
+                row = gameBoard.getTokenRow(column);
 
-                if (row != -1 && checkXInARow(column, row, 3, enemyPlayer, board))
+                if (row != -1 && gameBoard.checkXInARow(column, row, 3, getEnemyColor()))
                 {
                     possibleSolutions.add(column);
                 }
 
-                if (row != -1 && checkXInARow(column, row, 2, enemyPlayer, board))
+                if (row != -1 && gameBoard.checkXInARow(column, row, 2, getEnemyColor()))
                 {
                     possibleSolutions.add(column);
                 }
@@ -83,9 +84,9 @@ public class Computer extends Player {
             while (posSolu.hasNext())
             {
                 possibleColumn = posSolu.next();
-                int nextRow = insertToken(possibleColumn, board) + 1;
+                int nextRow = gameBoard.getTokenRow(possibleColumn) + 1;
                 if (nextRow <= topRow
-                    && checkXInARow(possibleColumn, nextRow, 4, enemyPlayer, board))
+                    && gameBoard.checkXInARow(possibleColumn, nextRow, 4, getEnemyColor()))
                 {
                     posSolu.remove();
                 }
@@ -119,13 +120,13 @@ public class Computer extends Player {
                 // schlechte Zuege filtern
                 for (int col = 0; col < 7; col++)
                 {
-                    if (board[col][topRow].getPlayer() != null)
+                    if (board[col][topRow].getTokenColor() != TokenColor.None)
                         veryBadIdeas.add(col);
                     else
                     { 
-                        int nextRow = insertToken(col, board) + 1;
+                        int nextRow = gameBoard.getTokenRow(col) + 1;
                         if (nextRow <= topRow
-                            && checkXInARow(col, nextRow, 4, enemyPlayer, board))
+                            && gameBoard.checkXInARow(col, nextRow, 4, getTokenColor()))
                         {
                             veryBadIdeas.add(col);
                         }
@@ -139,7 +140,7 @@ public class Computer extends Player {
                     {
                         column = grn.nextInt(board.length);
                     }
-                    while (board[column][topRow].getPlayer() != null);
+                    while (board[column][topRow].getTokenColor() != TokenColor.None);
 
                     return column;
                   }
@@ -157,10 +158,5 @@ public class Computer extends Player {
         }
         
         return grn.nextInt(board.length);
-    }
-
-    @Override
-    public int getColumn(GameBoard board) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

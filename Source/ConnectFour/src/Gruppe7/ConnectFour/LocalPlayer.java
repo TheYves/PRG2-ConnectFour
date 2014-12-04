@@ -11,8 +11,12 @@ package Gruppe7.ConnectFour;
  */
 public class LocalPlayer extends Player {
 
+    public LocalPlayer(String nickname, TokenColor tokenColor) {
+        super(nickname, tokenColor);
+    }
+
     @Override
-    public int makeMove(int previousEnemyColumn) {
+    public int makeMove(GameBoard gameBoard) {
         throw new UnsupportedOperationException("Ask UI for next move."); //To change body of generated methods, choose Tools | Templates.
     }
 }

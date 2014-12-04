@@ -11,29 +11,31 @@ package Gruppe7.ConnectFour;
  */
 public class GameBoard {
     private Token[][] board;
-    private Player thisPlayer;
-    private Player enemyPlayer;
     
     private static final int defaultSizeX = 7;
     private static final int defaultSizeY = 6;
     
-    public GameBoard(Player thisPlayer, Player enemyPlayer)
-    {
-        this(thisPlayer, enemyPlayer, defaultSizeX, defaultSizeY);
+    Token[][] getBoard(){
+        return board;
     }
     
-    public GameBoard(Player thisPlayer, Player enemyPlayer, int x, int y)
+    public GameBoard()
+    {
+        this(defaultSizeX, defaultSizeY);
+    }
+    
+    public GameBoard(int x, int y)
     {
         this.board = new Token[x][y];
     }
     
     // ----- helper method: check if there are X in a Row --------
-    public boolean checkXInARow(int col, int row, int x, Player checkPlayer)
+    public boolean checkXInARow(int col, int row, int x, TokenColor tokenColor)
     {
-        if (checkVertically(col, row, x, checkPlayer)
-            || checkHorizontally(col, row, x, checkPlayer)
-            || checkDiagonally1(col, row, x, checkPlayer)
-            || checkDiagonally2(col, row, x, checkPlayer))
+        if (checkVertically(col, row, x, tokenColor)
+            || checkHorizontally(col, row, x, tokenColor)
+            || checkDiagonally1(col, row, x, tokenColor)
+            || checkDiagonally2(col, row, x, tokenColor))
         {
             return true;
         }
@@ -42,7 +44,7 @@ public class GameBoard {
     }
 
   //------checking nrOfTokens in  a row
-  private boolean checkDiagonally1(int col, int row, int nrOfTokens, Player checkPlayer)
+  private boolean checkDiagonally1(int col, int row, int nrOfTokens, TokenColor tokenColor)
   {
     for (int j = 0; j < nrOfTokens; j++)
     {
@@ -52,7 +54,7 @@ public class GameBoard {
             if ((col + i - j) >= 0 && (col + i - j) < board.length
                 && (row + i - j) >= 0
                 && (row + i - j) < board[col].length
-                && board[col + i - j][row + i - j].getPlayer() == checkPlayer)
+                && board[col + i - j][row + i - j].getTokenColor() == tokenColor)
             {
                 adjacentSameTokens++;
             }
@@ -63,7 +65,7 @@ public class GameBoard {
     return false;
   }
   
-  private boolean checkDiagonally2(int col, int row, int nrOfTokens, Player checkPlayer)
+  private boolean checkDiagonally2(int col, int row, int nrOfTokens, TokenColor tokenColor)
   {
     for (int j = 0; j < nrOfTokens; j++)
     {
@@ -73,7 +75,7 @@ public class GameBoard {
             if ((col - i + j) >= 0 && (col - i + j) < board.length
                 && (row + i - j) >= 0
                 && (row + i - j) < board[col].length
-                && board[col - i + j][row + i - j].getPlayer() == checkPlayer)
+                && board[col - i + j][row + i - j].getTokenColor()== tokenColor)
             {
                 adjacentSameTokens++;
             }
@@ -84,7 +86,7 @@ public class GameBoard {
     return false;
   }
 
-    private boolean checkHorizontally(int col, int row, int nrOfTokens, Player checkPlayer)
+    private boolean checkHorizontally(int col, int row, int nrOfTokens, TokenColor tokenColor)
     {
         for (int j = 0; j < nrOfTokens; j++)
         {
@@ -92,7 +94,7 @@ public class GameBoard {
             for (int i = 0; i < nrOfTokens; i++)
             {
                 if ((col + i - j) >= 0 && (col + i - j) < board.length
-                    && board[col + i - j][row].getPlayer() == checkPlayer)
+                    && board[col + i - j][row].getTokenColor()== tokenColor)
                 {
                     adjacentSameTokens++;
                 }
@@ -103,7 +105,7 @@ public class GameBoard {
         return false;
     }
 
-    private boolean checkVertically(int col, int row, int nrOfTokens, Player checkPlayer)
+    private boolean checkVertically(int col, int row, int nrOfTokens, TokenColor tokenColor)
     {
         for (int j = 0; j < nrOfTokens; j++)
         {
@@ -111,7 +113,7 @@ public class GameBoard {
             for (int i = 0; i < nrOfTokens; i++)
             {
                 if ((row + i - j) >= 0 && (row + i - j) < board[col].length
-                    && board[col][row + i - j].getPlayer() == checkPlayer)
+                    && board[col][row + i - j].getTokenColor()== tokenColor)
                 {
                     adjacentSameTokens++;
                 }
@@ -126,9 +128,41 @@ public class GameBoard {
     {
         for (int i = 0; i < board.length; i++)
         {
-            if (board[i][0].getPlayer() != null)
+            if (board[i][0].getTokenColor() != TokenColor.None)
                 return false;
         }
         return true;
+    }
+
+    /**
+     *
+     * @param column
+     * @param tokenColor
+     * @param commitMove
+     * @return Die Row (Zeile), in der das Token zum Liegen kommt.
+     */
+    public int getTokenRow(int column)
+    {
+        int rowCount = 0;
+        Token[] insertingColumn = this.board[column];
+        for (Token row : insertingColumn)
+        {
+            if (row.getTokenColor() == TokenColor.None)
+            {
+                return rowCount;
+            }
+            
+            rowCount++;
+        }
+        return -1; // Row is full of tokens
+    }
+    
+    public boolean insertToken(int column, TokenColor tokenColor){
+        int row = getTokenRow(column);
+        if (row >= 0){
+            this.board[column][row].setTokenColor(tokenColor);
+            return true;
+        }
+        return false;
     }
 }
