@@ -11,6 +11,7 @@ import java.util.Random;
  */
 public class Computer extends Player {
       
+    public enum ComputerLevel { Low, Medium, High };
     private ComputerLevel level = ComputerLevel.Low;
     
     public Computer(ComputerLevel level, TokenColor tokenColor) {
