@@ -11,17 +11,16 @@ import java.util.Random;
  */
 public class Computer extends Player {
       
+    public enum ComputerLevel { Low, Medium, High };
     private ComputerLevel level = ComputerLevel.Low;
     
-    public Computer(Player thisPlayer, Player enemyPlayer, GameModel game, ComputerLevel level)
+    public Computer(GameModel game, ComputerLevel level)
     {
-        this.thisPlayer = thisPlayer;
-        this.enemyPlayer = enemyPlayer;
         this.level = level;
     }
 
     @Override
-    public int getColumn(Token[][] board)
+    public int getColumn(Token[][] board, Player thisPlayer)
     {
         Random grn = new Random();
         
@@ -47,7 +46,7 @@ public class Computer extends Player {
             for (column = 0; column < board.length; column++)
             {
                 row = insertToken(column, board);
-                if (row != -1 && checkXInARow(column, row, 4, this.thisPlayer, board))
+                if (row != -1 && checkXInARow(column, row, 4, thisPlayer, board))
                 {
                     return column; // Gewonnen
                 }
@@ -57,7 +56,7 @@ public class Computer extends Player {
             for (column = 0; column < board.length; column++)
             {
                 row = insertToken(column, board);
-                if (row != -1 && checkXInARow(column, row, 4, enemyPlayer, board))
+                if (row != -1 && checkXInARow(column, row, 4, this, board))
                 {
                     return column;
                 }
@@ -68,12 +67,12 @@ public class Computer extends Player {
             {
                 row = insertToken(column, board);
 
-                if (row != -1 && checkXInARow(column, row, 3, enemyPlayer, board))
+                if (row != -1 && checkXInARow(column, row, 3, this, board))
                 {
                     possibleSolutions.add(column);
                 }
 
-                if (row != -1 && checkXInARow(column, row, 2, enemyPlayer, board))
+                if (row != -1 && checkXInARow(column, row, 2, this, board))
                 {
                     possibleSolutions.add(column);
                 }
@@ -87,7 +86,7 @@ public class Computer extends Player {
                 possibleColumn = posSolu.next();
                 int nextRow = insertToken(possibleColumn, board) + 1;
                 if (nextRow <= topRow
-                    && checkXInARow(possibleColumn, nextRow, 4, enemyPlayer, board))
+                    && checkXInARow(possibleColumn, nextRow, 4, this, board))
                 {
                     posSolu.remove();
                 }
@@ -127,7 +126,7 @@ public class Computer extends Player {
                     { 
                         int nextRow = insertToken(col, board) + 1;
                         if (nextRow <= topRow
-                            && checkXInARow(col, nextRow, 4, enemyPlayer, board))
+                            && checkXInARow(col, nextRow, 4, this, board))
                         {
                             veryBadIdeas.add(col);
                         }

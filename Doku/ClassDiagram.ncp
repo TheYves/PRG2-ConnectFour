@@ -1,0 +1,204 @@
+<Project>
+  <Name>ConnectFour</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>ConnectFour</Name>
+    <Language>Java</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>GameModel</Name>
+        <Access>Public</Access>
+        <Location left="370" top="749" />
+        <Size width="337" height="254" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private Token[] board</Member>
+        <Member type="Method">public void move(int fieldIndex, Player player)</Member>
+        <Member type="Method">public boolean hasWinner()</Member>
+        <Member type="Constructor">public GameModel(GameType gameType, String opponentIp)</Member>
+        <Member type="Method">public void saveGame(string filePath)</Member>
+        <Member type="Method">public void getNextMove()</Member>
+        <Member type="Method">public bool isBoardEmpty()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Player</Name>
+        <Access>Public</Access>
+        <Location left="465" top="99" />
+        <Size width="162" height="281" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">protected Player thisPlayer</Member>
+        <Member type="Field">protected Player enemyPlayer</Member>
+        <Member type="Field">protected GameBoard gb</Member>
+        <Member type="Method">public abstract int Player()</Member>
+        <Member type="Method">public abstract int getColumn()</Member>
+        <Member type="Method">public int insertToken()</Member>
+        <Member type="Method">public boolean checkXInARow(int col, int row, int x, Player player, Token[] board)</Member>
+        <Member type="Method">public void checkDiagonally2()</Member>
+        <Member type="Method">public void checkDiagonally1()</Member>
+        <Member type="Method">public void checkVertically()</Member>
+        <Member type="Method">public void isBoardEmpty()</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Enum">
+        <Name>PlayerType</Name>
+        <Access>Public</Access>
+        <Location left="756" top="37" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Value>Couch</Value>
+        <Value>LAN</Value>
+        <Value>Computer</Value>
+      </Entity>
+      <Entity type="Class">
+        <Name>GameController</Name>
+        <Access>Public</Access>
+        <Location left="125" top="60" />
+        <Size width="243" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private Game currentGame</Member>
+        <Member type="Field">private Player currentPlayer</Member>
+        <Member type="Field">private GameView gameView</Member>
+        <Member type="Method">public void startGame(PlayerType oponent)</Member>
+        <Member type="Method">public void startLanGame()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>GameView</Name>
+        <Access>Public</Access>
+        <Location left="73" top="429" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Token</Name>
+        <Access>Public</Access>
+        <Location left="849" top="337" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private Player player</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Computer</Name>
+        <Access>Public</Access>
+        <Location left="370" top="445" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public int getColumn(GameModel board)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Human</Name>
+        <Access>Public</Access>
+        <Location left="550" top="445" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Association" first="3" second="4">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="3" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>299</X>
+          <Y>316</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="1" second="2">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="3" second="2">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>715</X>
+          <Y>76</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="3" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Generalization" first="6" second="1">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>507</X>
+          <Y>420</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Association" first="0" second="6">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>505</X>
+          <Y>720</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="0" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>741</X>
+          <Y>880</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>741</X>
+          <Y>473</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="1" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Generalization" first="7" second="1">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>568</X>
+          <Y>420</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Association" first="0" second="7">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>566</X>
+          <Y>723</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>

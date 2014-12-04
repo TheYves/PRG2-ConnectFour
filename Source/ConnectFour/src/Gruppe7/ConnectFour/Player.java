@@ -6,12 +6,7 @@ package Gruppe7.ConnectFour;
  */
 public abstract class Player 
 {
-    protected Player thisPlayer; //initialized @ constructor
-    protected Player enemyPlayer;
-    
-    public enum ComputerLevel { Low, Medium, High };
-    
-    public abstract int getColumn(Token[][] board);
+    public abstract int getColumn(Token[][] board, Player player);
 
     protected int insertToken(int column, Token[][] board)
     {
@@ -126,10 +121,10 @@ public abstract class Player
 
     protected boolean isBoardEmpty(Token[][] board)
     {
-        for (int i = 0; i < board.length; i++)
-        {
-            if (board[i][0].getPlayer() != null)
+        for (Token[] token : board) {
+            if (token[0].getPlayer() != null) {
                 return false;
+            }
         }
         return true;
     }

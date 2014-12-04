@@ -14,7 +14,7 @@ public class Human extends Player {
     String nickname = "Player";
 
     @Override
-    public int getColumn(Token[][] board) {
+    public int getColumn(Token[][] board, Player enemyPlayer) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
