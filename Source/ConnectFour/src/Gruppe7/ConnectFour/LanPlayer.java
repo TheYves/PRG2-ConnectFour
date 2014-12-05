@@ -5,6 +5,9 @@
  */
 package Gruppe7.ConnectFour;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Nick
@@ -14,11 +17,16 @@ public class LanPlayer extends Player implements Runnable {
     private final boolean isHost;
     private Thread thread;
     private String ip;
+    protected List<ILanPlayerListener> lanListeners = new ArrayList<ILanPlayerListener>();
     
     public LanPlayer(String ip, boolean isHost, TokenColor tokenColor){
         super("Lan Enemy", tokenColor);
         this.isHost = isHost;
         this.ip = ip;
+    }
+
+    public void addPlayerListener(ILanPlayerListener listener) {
+        lanListeners.add(listener);
     }
     
     public boolean isHost(){
@@ -37,7 +45,7 @@ public class LanPlayer extends Player implements Runnable {
      * @return Ob der Spieler verbunden ist. Sollte vor jedem neuen Zug geprüft werden.
      */
     public boolean isConnected(){
-       
+       return false;
     }
 
     @Override

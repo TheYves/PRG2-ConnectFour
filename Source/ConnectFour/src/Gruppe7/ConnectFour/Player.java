@@ -12,7 +12,6 @@ public abstract class Player
     protected String nickname = "Player";
     private TokenColor tokenColor;
     protected List<IPlayerListener> listeners = new ArrayList<IPlayerListener>();
-    protected List<ILanPlayerListener> lanListeners = new ArrayList<ILanPlayerListener>();
 
     private GameBoard gameBoard;
     

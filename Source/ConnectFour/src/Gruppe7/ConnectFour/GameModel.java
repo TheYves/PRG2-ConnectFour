@@ -127,5 +127,5 @@ public class GameModel {
     public String serializeBoard(){
         throw new NotImplementedException();
     }
-    
+
 }
