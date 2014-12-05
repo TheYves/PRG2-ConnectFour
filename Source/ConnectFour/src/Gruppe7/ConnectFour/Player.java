@@ -1,5 +1,8 @@
 package Gruppe7.ConnectFour;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Christoph
@@ -8,7 +11,9 @@ public abstract class Player
 {
     protected String nickname = "Player";
     private TokenColor tokenColor;
-    
+    protected List<IPlayerListener> listeners = new ArrayList<IPlayerListener>();
+    protected List<ILanPlayerListener> lanListeners = new ArrayList<ILanPlayerListener>();
+
     private GameBoard gameBoard;
     
     public Player(String nickname, TokenColor tokenColor){
@@ -23,6 +28,10 @@ public abstract class Player
     }
     
     public abstract int makeMove(GameBoard gameBoard);
+
+    public void addPlayerListener(IPlayerListener listener) {
+        listeners.add(listener);
+    }
 
     /**
      * @return the tokenOwner

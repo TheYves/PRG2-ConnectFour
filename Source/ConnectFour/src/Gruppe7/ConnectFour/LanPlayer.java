@@ -9,7 +9,7 @@ package Gruppe7.ConnectFour;
  *
  * @author Nick
  */
-public class LanPlayer extends Player implements Runnable{
+public class LanPlayer extends Player implements Runnable {
 
     private final boolean isHost;
     private Thread thread;
@@ -56,5 +56,5 @@ public class LanPlayer extends Player implements Runnable{
     public int makeMove(GameBoard gameBoard) {
         throw new UnsupportedOperationException("Network stuff."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

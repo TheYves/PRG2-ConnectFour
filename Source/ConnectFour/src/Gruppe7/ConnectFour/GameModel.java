@@ -44,16 +44,23 @@ public class GameModel {
         boolean gameReady = true;
         if(enemyPlayer instanceof LanPlayer){
             LanPlayer lanPlayer = ((LanPlayer)enemyPlayer);
-            lanPlayer.start();
-            try {
-                while (!lanPlayer.isConnected()){
-                    lanPlayer.wait();
+            lanPlayer.addPlayerListener(new ILanPlayerListener() {
+                @Override
+                public void isReady() {
+
                 }
-                gameReady = ((LanPlayer)enemyPlayer).isConnected();
-            }
-            catch (InterruptedException ex) {
-                gameReady = false;
-            }
+
+                @Override
+                public void connectionLost() {
+
+                }
+
+                @Override
+                public GameBoard moveMade() {
+                    return null;
+                }
+            });
+            lanPlayer.start();
         }
         
         if (gameReady)
@@ -120,4 +127,5 @@ public class GameModel {
     public String serializeBoard(){
         throw new NotImplementedException();
     }
+    
 }
