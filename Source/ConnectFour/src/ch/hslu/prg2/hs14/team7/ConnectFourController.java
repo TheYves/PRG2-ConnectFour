@@ -25,8 +25,9 @@ public class ConnectFourController {
 	 *
 	 * @param level
 	 */
-	public void newComputerGame(String nickname, ComputerLevel level) {
-		gameModel = new GameModel(new LocalPlayer(nickname, TokenColor.Yellow), new ComputerPlayer(level, TokenColor.Red));
+	public void newComputerGame(Player thisPlayer, IPlayerListener listener, ComputerLevel level) {
+		TokenColor computerColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
+		gameModel = new GameModel(thisPlayer, new ComputerPlayer(level, computerColor));
 		nextTurn();
 	}
 
@@ -35,8 +36,8 @@ public class ConnectFourController {
 	 *
 	 * @param localName
 	 */
-	public void newLocalGame(String nickname, String enemyNickname) {
-		gameModel = new GameModel(new LocalPlayer(nickname, TokenColor.Yellow), new LocalPlayer(enemyNickname, TokenColor.Red));
+	public void newLocalGame(Player thisPlayer, Player enemyPlayer) {
+		gameModel = new GameModel(thisPlayer, enemyPlayer);
 		nextTurn();
 	}
 
@@ -45,10 +46,11 @@ public class ConnectFourController {
 	 *
 	 * @param ip
 	 */
-	public void joinLanGame(String nickname, int port, String ip) {
-		ClientLanPlayer lanPlayer = new ClientLanPlayer(port, ip, TokenColor.Red);
+	public void joinLanGame(Player thisPlayer, int port, String ip) {
+		TokenColor lanColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
+		ClientLanPlayer lanPlayer = new ClientLanPlayer(port, ip, lanColor);
 
-		gameModel = new GameModel(new LocalPlayer(nickname, TokenColor.Yellow), lanPlayer);
+		gameModel = new GameModel(thisPlayer, lanPlayer);
 
 		lanPlayer.addPlayerListener(new ILanPlayerListener() {
 			@Override
@@ -75,10 +77,11 @@ public class ConnectFourController {
 	 *
 	 * @param ip
 	 */
-	public void hostLanGame(String nickname, int port) {
-		HostLanPlayer lanPlayer = new HostLanPlayer(port, TokenColor.Red);
+	public void hostLanGame(Player thisPlayer, int port) {
+		TokenColor lanColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
+		HostLanPlayer lanPlayer = new HostLanPlayer(port, lanColor);
 
-		gameModel = new GameModel(new LocalPlayer(nickname, TokenColor.Yellow), lanPlayer);
+		gameModel = new GameModel(thisPlayer, lanPlayer);
 
 		lanPlayer.addPlayerListener(new ILanPlayerListener() {
 			@Override
