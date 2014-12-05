@@ -1,4 +1,8 @@
-package Gruppe7.ConnectFour;
+package ch.hslu.prg2.hs14.team7.player;
+
+import ch.hslu.prg2.hs14.team7.GameBoard;
+import ch.hslu.prg2.hs14.team7.NoColorException;
+import ch.hslu.prg2.hs14.team7.TokenColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,18 +18,18 @@ public abstract class Player
     protected List<IPlayerListener> listeners = new ArrayList<IPlayerListener>();
 
     private GameBoard gameBoard;
-    
+
     public Player(String nickname, TokenColor tokenColor){
         if (tokenColor == TokenColor.None)
             throw new NoColorException();
         this.nickname = nickname;
         this.tokenColor = tokenColor;
     }
-    
+
     public String getNickname(){
         return nickname;
     }
-    
+
     public abstract int makeMove(GameBoard gameBoard);
 
     public void addPlayerListener(IPlayerListener listener) {
@@ -38,7 +42,7 @@ public abstract class Player
     public TokenColor getTokenColor() {
         return tokenColor;
     }
-    
+
     public TokenColor getEnemyColor(){
         if (tokenColor == TokenColor.Red)
             return TokenColor.Yellow;

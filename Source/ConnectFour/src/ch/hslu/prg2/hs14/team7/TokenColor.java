@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Gruppe7.ConnectFour;
+package ch.hslu.prg2.hs14.team7;
 
 /**
  *
  * @author Nick
  */
-public enum ComputerLevel {
-    Low, Medium, High
+public enum TokenColor {
+    None, Red, Yellow
 }

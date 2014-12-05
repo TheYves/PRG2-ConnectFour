@@ -1,4 +1,8 @@
-package Gruppe7.ConnectFour;
+package ch.hslu.prg2.hs14.team7.player;
+
+import ch.hslu.prg2.hs14.team7.GameBoard;
+import ch.hslu.prg2.hs14.team7.Token;
+import ch.hslu.prg2.hs14.team7.TokenColor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +13,11 @@ import java.util.Random;
  *
  * @author Christoph
  */
-public class Computer extends Player {
+public class ComputerPlayer extends Player {
       
     private ComputerLevel level = ComputerLevel.Low;
     
-    public Computer(ComputerLevel level, TokenColor tokenColor) {
+    public ComputerPlayer(ComputerLevel level, TokenColor tokenColor) {
         super("Computer", tokenColor);
         this.level = level;
     }

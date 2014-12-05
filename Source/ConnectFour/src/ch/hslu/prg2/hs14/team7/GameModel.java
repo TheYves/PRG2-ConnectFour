@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Gruppe7.ConnectFour;
+package ch.hslu.prg2.hs14.team7;
 
-import java.awt.Color;
+import ch.hslu.prg2.hs14.team7.player.ILanPlayerListener;
+import ch.hslu.prg2.hs14.team7.player.LanPlayer;
+import ch.hslu.prg2.hs14.team7.player.Player;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

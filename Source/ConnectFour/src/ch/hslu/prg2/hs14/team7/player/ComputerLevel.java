@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Gruppe7.ConnectFour;
+package ch.hslu.prg2.hs14.team7.player;
 
 /**
  *
  * @author Nick
  */
-public class NoColorException extends RuntimeException{
-    
+public enum ComputerLevel {
+    Low, Medium, High
 }
