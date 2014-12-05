@@ -15,7 +15,7 @@ public class GameBoard {
     private static final int defaultSizeX = 7;
     private static final int defaultSizeY = 6;
     
-    Token[][] getBoard(){
+    public Token[][] getBoard(){
         return board;
     }
     
@@ -124,7 +124,7 @@ public class GameBoard {
         return false;
     }
 
-    protected boolean isBoardEmpty()
+    public boolean isBoardEmpty()
     {
         for (int i = 0; i < board.length; i++)
         {

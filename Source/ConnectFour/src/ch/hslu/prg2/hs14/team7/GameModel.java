@@ -6,9 +6,12 @@
 package ch.hslu.prg2.hs14.team7;
 
 import ch.hslu.prg2.hs14.team7.player.ILanPlayerListener;
+import ch.hslu.prg2.hs14.team7.player.IPlayerListener;
 import ch.hslu.prg2.hs14.team7.player.LanPlayer;
 import ch.hslu.prg2.hs14.team7.player.Player;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.Random;
 
 /**
  *
@@ -17,117 +20,37 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class GameModel {
     private GameBoard gameBoard;
     private final Player thisPlayer;
-    private Player enemyPlayer;
-    
-    public GameModel(Player thisPlayer){
+    private final Player enemyPlayer;
+    private Player currentPlayer;
+
+    public GameModel(Player thisPlayer, Player enemyPlayer){
         this.thisPlayer = thisPlayer;
-    }
-    
-    /**
-     * Mapping von Spieler zur TokenColor.
-     * @param tokenColor
-     * @return Mapping von Spieler zur TokenColor.
-     */
-    public Player getPlayer(TokenColor tokenColor){
-        if (thisPlayer.getTokenColor() == tokenColor){
-            return thisPlayer;
-        }
-        else{
-            return enemyPlayer;
-        }
-    }
-    
-    /**
-     * Startet ein neues Game gegen den spezifizierten Spieler.
-     * @param enemyPlayer
-     * @return Ob ein Spiel gestartet werden konnte.
-     */
-    public boolean startGame(Player enemyPlayer){
-        boolean gameReady = true;
-        if(enemyPlayer instanceof LanPlayer){
-            LanPlayer lanPlayer = ((LanPlayer)enemyPlayer);
-            lanPlayer.addPlayerListener(new ILanPlayerListener() {
-                @Override
-                public void isReady() {
-
-                }
-
-                @Override
-                public void connectionLost() {
-
-                }
-
-                @Override
-                public GameBoard moveMade() {
-                    return null;
-                }
-            });
-            lanPlayer.start();
-        }
-        
-        if (gameReady)
-        {
-            this.gameBoard = new GameBoard();
-            this.enemyPlayer = enemyPlayer;
-        }
-        
-        return gameReady;
-    }
-    
-    /**
-     * 
-     * @return Ob ein Spiel läuft
-     */
-    public boolean isGameRunning(){
-        return gameBoard != null;
-    }
-    
-    /**
-     *
-     * @return Ob ein Spiel einen Gewinner hat.
-     */
-    public boolean hasWinner(){
-        int height = 0;
-        if (gameBoard.getBoard().length > 0)
-        {
-            height = gameBoard.getBoard()[0].length;
-        }
-        
-        for (int column = 0; column < gameBoard.getBoard().length; column++) {
-            for (int row = 0; row < height; row++){
-                if (gameBoard.checkXInARow(column, row, 4, TokenColor.Yellow) 
-                   || (gameBoard.checkXInARow(column, row, 4, TokenColor.Red)))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
+        this.enemyPlayer = enemyPlayer;
+        this.gameBoard = new GameBoard();
     }
 
-    /**
-     * @return Das Gameboard.
-     */
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
     public GameBoard getGameBoard() {
         return gameBoard;
     }
 
-    /**
-     * @return Den "freundlichen" Spieler.
-     */
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
+    }
+
     public Player getThisPlayer() {
         return thisPlayer;
     }
 
-    /**
-     * @return Den Gegenspieler.
-     */
     public Player getEnemyPlayer() {
         return enemyPlayer;
-    }
-    
-    public String serializeBoard(){
-        throw new NotImplementedException();
     }
 
 }
