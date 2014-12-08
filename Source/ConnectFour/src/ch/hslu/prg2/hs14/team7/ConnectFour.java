@@ -6,8 +6,10 @@ public class ConnectFour {
 
     public static void main(String[] args) 
     {
-        StartGameDialog gui = new StartGameDialog();
+        ConnectFourGUI gui = new ConnectFourGUI();
         gui.setVisible(true);
+        gui.start();
+        //StartGameDialog sgd = new StartGameDialog();
     }
     
 }

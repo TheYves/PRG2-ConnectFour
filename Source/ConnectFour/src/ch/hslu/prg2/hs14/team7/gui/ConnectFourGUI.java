@@ -1,60 +1,204 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package ch.hslu.prg2.hs14.team7.gui;
 
-import java.awt.Graphics;
+import ch.hslu.prg2.hs14.team7.ConnectFourController;
+import ch.hslu.prg2.hs14.team7.GameBoard;
+import ch.hslu.prg2.hs14.team7.IControllerListener;
+import ch.hslu.prg2.hs14.team7.TokenColor;
+import ch.hslu.prg2.hs14.team7.player.ComputerLevel;
+import ch.hslu.prg2.hs14.team7.player.IPlayerListener;
+import ch.hslu.prg2.hs14.team7.player.LocalPlayer;
+import ch.hslu.prg2.hs14.team7.player.Player;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.DebugGraphics;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 
-public class ConnectFourGUI extends JFrame implements Runnable {
+/**
+ *
+ * @author Nick
+ */
+public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
+
+    // UI Elemente
+    private BufferedImage gameBoardPartImage;
+    private BufferedImage redTokenImage;
+    private BufferedImage yellowTokenImage;
+    private JPanel gameBoardPanel = new JPanel();
     
-    /**
-     * Erstellt den Spielfeld Hintergrund (visuelles Game Board).
-     */
-    /*public final void gameBackground() {
-        try {
-            myPanel.setLayout(new GridLayout(y_Achse, x_Achse));
-            jPanel2.setLayout(new GridLayout(1, x_Achse));
-
-            for (int i = 0; i < x_Achse; i++) {
-                myLabels.add(new ArrayList<JLabel>());
-            }
-            for (int i = 0; i < y_Achse; i++) {
-                for (int k = 0; k < x_Achse; k++) {
-                    myLabels.get(i).add(new JLabel(myPicture));
-                    jPanel1.add(myLabels.get(i).get(k));
-                }
-            }
-
-            pack();
-
-        } catch (Exception ex) {
-            Logger.getLogger(GUIMain.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }*/
+    // UI Konstanten
+    private final Dimension tokenSize = new Dimension(70, 70);
+    private Dimension defaultWindowDimension = new Dimension(720, 480);
+    
+    // Multithreading
     private boolean running;
     private Thread thread;
     
-    BufferedImage foregroundImage;
+    // Connect Four logic
+    private ConnectFourController controller;
+    private IPlayerListener uiUpdater;
     
-    public ConnectFourGUI(){
-        setUndecorated(false);
+    // events
+    private List<IGUIListener> listeners = new ArrayList<IGUIListener>();
+    
+    /**
+     * Creates new form ConnectFourGUI
+     */
+    public ConnectFourGUI() {
+        initComponents();
+        
+        //setUndecorated(true);
         //setResizable(false);
-        setVisible(true);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);        
+        
+        // JFrame in der Mitte des Bildschirmes
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(screenSize.width/2-this.getSize().width/2, screenSize.height/2-this.getSize().height/2);
         
         try {
-            foregroundImage = ImageIO.read(getClass().getResource("resources/foreground.png")); 
-        } catch (Exception e) {
+            yellowTokenImage = ImageIO.read(getClass().getResource("resources/YellowToken.png")); 
+            redTokenImage = ImageIO.read(getClass().getResource("resources/RedToken.png"));
+            gameBoardPartImage = ImageIO.read(getClass().getResource("resources/GameBoardPart.png"));
+        } catch (IOException ioe) {
+            //@todo: handle IOException
+        }
+        
+        centerPanel.addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (controller != null && controller.isGameRunning()){
+                    boolean isCurrentPlayersTurn = controller.getGameModel().getCurrentPlayer() == controller.getThisPlayer();
+                    if (isCurrentPlayersTurn
+                            || controller.getEnemyPlayer() instanceof LocalPlayer)
+                    {
+                        Point p = e.getPoint();
+                        int column = getTokenColumn(p);
+                        if (isCurrentPlayersTurn){
+                            for(IGUIListener listener : listeners){
+                                listener.moveMade(controller.getGameBoard(), column, controller.getThisPlayer().getTokenColor());
+                            }
+                        }
+                        else{
+                            for(IGUIListener listener : listeners){
+                                listener.moveMade(controller.getGameBoard(), column, controller.getEnemyPlayer().getTokenColor());
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        
+        controller.addListener(new IControllerListener() {
+
+            @Override
+            public void moveMade(GameBoard board, int column, TokenColor tokenColor) {
+                // es gibt momentan nur ein einziges Board, daher gibt es keinen Switch auf das GameBoard.
+                drawGameBoard(board);
+            }
+
+            @Override
+            public void enemyPlayerWonAGame(GameBoard board) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void thisPlayerWonAGame(GameBoard board) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        
+        registerLocalPlayer();
+    }
+    
+    private void addListener(IGUIListener listener){
+        listeners.add(listener);
+    }
+    
+    public final void registerLocalPlayer(){
+        if (controller ==  null){
+            Player thisPlayer = null;
+            String defaultNickname = "";
+            try {
+                String localMachineName = java.net.InetAddress.getLocalHost().getHostName();
+                String localUserName = System.getProperty("user.name");
+                defaultNickname = localUserName + " spielt auf " + localMachineName;
+            } catch (UnknownHostException e) {
+            }
+
+            if (!defaultNickname.equals("")){
+                int response = JOptionPane.showConfirmDialog(null, "Möchtest du " + defaultNickname + " heissen?", "Wer bist du?",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (response == JOptionPane.YES_OPTION){
+                  thisPlayer = new LocalPlayer(defaultNickname, TokenColor.Yellow);
+                }
+            }
+
+            while (thisPlayer == null){
+                String playerName = (String)JOptionPane.showInputDialog(null, "Nicknamen eingeben: ", "Wer bist du?", JOptionPane.PLAIN_MESSAGE);
+                if (!playerName.equals("")){
+                    thisPlayer = new LocalPlayer(playerName, TokenColor.Yellow);
+                }
+            }
         }
     }
     
-    public void initialize(){
+    public void insertToken(int column, TokenColor tokenColor){
+        Point tokenPosition = getNextTokenPosition(column);
+        this.getGraphics().drawImage((tokenColor == TokenColor.Red ? redTokenImage : yellowTokenImage), tokenPosition.x, tokenPosition.y, this);
     }
     
-    public void paint(Graphics g){
-        super.paint(g);
-        g.drawImage(foregroundImage, 0, 0, rootPane);
+    public Point getNextTokenPosition(int column){
+        int xCoord = gameBoardPanel.getX() + (column * (int)tokenSize.getWidth());
+        int row = controller.getGameBoard().getTokenRow(column);
+        int yCoord = (gameBoardPanel.getY() + (row * (int)tokenSize.getHeight()));
+        return new Point(xCoord, yCoord);
+    }
+    
+    public int getTokenColumn(Point mousePosition){
+        return 0; // @todo: hole colimn index von der maus position.
     }
 
     public synchronized void start() {
@@ -66,12 +210,12 @@ public class ConnectFourGUI extends JFrame implements Runnable {
         thread.start();
     }
     
-    
     public synchronized void stop() {
         if (!running) {
             return;
         }
         running = false;
+        
         try {
             thread.join();
         } catch (InterruptedException ex) {
@@ -79,11 +223,160 @@ public class ConnectFourGUI extends JFrame implements Runnable {
         }
         System.exit(1);
     }
-       
+    
     @Override
     public void run() {
-        initialize();
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
+    public void drawGameBoard(GameBoard gameBoard) {
+        int width = gameBoard.getBoard().length;
+        int height = gameBoard.getBoard()[0].length;
+        gameBoardPanel = new JPanel();
+        gameBoardPanel.setBounds(0, 0, tokenSize.width * width, tokenSize.height * height);
+        for (int columnCount = 0; columnCount < width; columnCount++){
+            for (int rowCount = 0; rowCount < width; rowCount++){
+                // draw images...
+            }    
+        }
+        centerPanel.add(gameBoardPanel);
+    }    
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        topPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        centerPanel = new javax.swing.JPanel();
+        startGomputerGame = new javax.swing.JButton();
+        startLocalMultiplayerGame = new javax.swing.JButton();
+        startLANGame = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(720, 405));
+        setMinimumSize(new java.awt.Dimension(720, 405));
+        setPreferredSize(new java.awt.Dimension(720, 405));
+
+        jLabel1.setText("Willkommen zu Viergewinnt!");
+
+        javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
+        topPanel.setLayout(topPanelLayout);
+        topPanelLayout.setHorizontalGroup(
+            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(topPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        topPanelLayout.setVerticalGroup(
+            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(topPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
+
+        centerPanel.setLayout(new java.awt.GridLayout());
+
+        startGomputerGame.setText("Computer");
+        startGomputerGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startGomputerGameActionPerformed(evt);
+            }
+        });
+        centerPanel.add(startGomputerGame);
+
+        startLocalMultiplayerGame.setText("Local Multiplayer");
+        startLocalMultiplayerGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startLocalMultiplayerGameActionPerformed(evt);
+            }
+        });
+        centerPanel.add(startLocalMultiplayerGame);
+
+        startLANGame.setText("LAN");
+        startLANGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startLANGameActionPerformed(evt);
+            }
+        });
+        centerPanel.add(startLANGame);
+
+        getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void startGomputerGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startGomputerGameActionPerformed
+        if (controller != null
+            && !controller.isGameRunning()) {
+            ComputerLevel[] levels = ComputerLevel.values();
+            ComputerLevel computerLevel = (ComputerLevel) JOptionPane.showInputDialog(null,
+                "Welches Level soll der Gegner haben?",
+                "Computer Level wählen",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                null,
+                levels,
+                levels[0]);
+            controller.newComputerGame(uiUpdater, computerLevel);
+            drawGameBoard(controller.getGameBoard());
+        }
+    }//GEN-LAST:event_startGomputerGameActionPerformed
+
+    private void startLANGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startLANGameActionPerformed
+        if (controller != null
+            && !controller.isGameRunning()) {
+            controller.newLocalGame(new LocalPlayer("Couch Buddy", controller.getThisPlayer().getEnemyColor()));
+        }
+        drawGameBoard(controller.getGameBoard());
+    }//GEN-LAST:event_startLANGameActionPerformed
+
+    private void startLocalMultiplayerGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startLocalMultiplayerGameActionPerformed
+        if (controller != null
+            && !controller.isGameRunning()) {
+            Object[] hostOrJoinOptions = {"Host", "Join"};
+            int hostOrJoin = JOptionPane.showOptionDialog(null,
+                "Welches Level soll der Gegner haben?",
+                "Computer Level wählen",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                hostOrJoinOptions,
+                hostOrJoinOptions[0]);
+            switch (hostOrJoin){
+                case -1: // rotes kreuz
+                    break;
+                case 0: // host
+                    controller.hostLanGame();
+                    break;
+                case 1: // join
+                    String ip = "";
+                    Pattern ipPattern = Pattern.compile("[0-255](\\.[0-255]){3}");
+                    while (ipPattern.matcher(ip).matches()){
+                        ip = (String)JOptionPane.showInputDialog(null, "Geben sie die IP vom Host an: ", "IP Adresse angeben", JOptionPane.YES_OPTION);
+                    }
+                    
+                    controller.joinLanGame(ip);
+                    break;
+            }
+        }
+        drawGameBoard(controller.getGameBoard());
+    }//GEN-LAST:event_startLocalMultiplayerGameActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel centerPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton startGomputerGame;
+    private javax.swing.JButton startLANGame;
+    private javax.swing.JButton startLocalMultiplayerGame;
+    private javax.swing.JPanel topPanel;
+    // End of variables declaration//GEN-END:variables
 }

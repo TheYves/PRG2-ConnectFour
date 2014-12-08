@@ -29,9 +29,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-public class StartGameDialog extends JDialog
+public class StartGameDialog extends JDialog implements Runnable
 {
-    //private String title = "Start new game.";
+    // Multithreading
+    private boolean running;
+    private Thread thread;
     
     private JButton startButton = new JButton("START");
     private JPanel titlePanel = new JPanel();
@@ -81,7 +83,33 @@ public class StartGameDialog extends JDialog
         setSize(400,100);
         setVisible(true);
     }
-    
 
-       
+
+    public synchronized void start() {
+        if (running) {
+            return;
+        }
+        running = true;
+        thread = new Thread(this);
+        thread.start();
+    }
+    
+    
+    public synchronized void stop() {
+        if (!running) {
+            return;
+        }
+        running = false;
+        
+        try {
+            thread.join();
+        } catch (InterruptedException ex) {
+            // todo: handle exception
+        }
+        System.exit(1);
+    }
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

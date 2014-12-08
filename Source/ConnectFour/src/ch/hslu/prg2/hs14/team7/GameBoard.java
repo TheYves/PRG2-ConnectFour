@@ -27,6 +27,12 @@ public class GameBoard {
     public GameBoard(int x, int y)
     {
         this.board = new Token[x][y];
+        
+        for (Token[] column : board){
+            for (int columnIndex = 0; columnIndex < y; columnIndex++){
+                column[columnIndex] = new Token(TokenColor.None);
+            }
+        }
     }
     
     // ----- helper method: check if there are X in a Row --------

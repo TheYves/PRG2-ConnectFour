@@ -7,6 +7,6 @@ import ch.hslu.prg2.hs14.team7.GameBoard;
  */
 public interface IPlayerListener {
 
-	public void moveMade(GameBoard gameBoard);
+	public void moveMade(GameBoard gameBoard, int col);
 
 }

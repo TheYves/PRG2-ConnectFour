@@ -36,9 +36,6 @@ public abstract class Player
         listeners.add(listener);
     }
 
-    /**
-     * @return the tokenOwner
-     */
     public TokenColor getTokenColor() {
         return tokenColor;
     }
@@ -50,5 +47,9 @@ public abstract class Player
             return TokenColor.Red;
         else
             return TokenColor.None;
+    }
+    
+    public List<IPlayerListener> getListeners(){
+        return this.listeners;
     }
 }
