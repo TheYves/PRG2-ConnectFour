@@ -11,6 +11,7 @@ package ch.hslu.prg2.hs14.team7;
  */
 public interface IControllerListener {
     public void moveMade(GameBoard board, int column, TokenColor tokenColor);
+    public void newGame(GameBoard board);
     public void enemyPlayerWonAGame(GameBoard board);
     public void thisPlayerWonAGame(GameBoard board);
 }

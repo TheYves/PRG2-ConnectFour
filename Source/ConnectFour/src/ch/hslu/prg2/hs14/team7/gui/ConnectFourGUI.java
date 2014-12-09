@@ -7,6 +7,7 @@ package ch.hslu.prg2.hs14.team7.gui;
 
 import ch.hslu.prg2.hs14.team7.ConnectFourController;
 import ch.hslu.prg2.hs14.team7.GameBoard;
+import ch.hslu.prg2.hs14.team7.GameModel;
 import ch.hslu.prg2.hs14.team7.IControllerListener;
 import ch.hslu.prg2.hs14.team7.TokenColor;
 import ch.hslu.prg2.hs14.team7.player.ComputerLevel;
@@ -14,6 +15,7 @@ import ch.hslu.prg2.hs14.team7.player.IPlayerListener;
 import ch.hslu.prg2.hs14.team7.player.LocalPlayer;
 import ch.hslu.prg2.hs14.team7.player.Player;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -24,6 +26,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -130,6 +134,8 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
+                
+        registerLocalPlayer();
         
         controller.addListener(new IControllerListener() {
 
@@ -141,16 +147,26 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
 
             @Override
             public void enemyPlayerWonAGame(GameBoard board) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                drawGameBoard(board);
+                displayWinner(controller.getEnemyPlayer());
             }
 
             @Override
             public void thisPlayerWonAGame(GameBoard board) {
+                drawGameBoard(board);
+                displayWinner(controller.getThisPlayer());
+            }
+            
+            @Override
+            public void newGame(GameBoard board) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
-        
-        registerLocalPlayer();
+    }
+
+    private void displayWinner(Player player) {
+        welcomeLabel.setText("Player: " + player.getNickname() + " has won!");
+        welcomeLabel.setForeground(player.getTokenColor() == TokenColor.Yellow ? Color.YELLOW : Color.RED);
     }
     
     private void addListener(IGUIListener listener){
@@ -178,10 +194,11 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
 
             while (thisPlayer == null){
                 String playerName = (String)JOptionPane.showInputDialog(null, "Nicknamen eingeben: ", "Wer bist du?", JOptionPane.PLAIN_MESSAGE);
-                if (!playerName.equals("")){
+                if (playerName != null && !playerName.equals("")){
                     thisPlayer = new LocalPlayer(playerName, TokenColor.Yellow);
                 }
             }
+            controller = new ConnectFourController(thisPlayer);
         }
     }
     
@@ -236,11 +253,14 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
         gameBoardPanel.setBounds(0, 0, tokenSize.width * width, tokenSize.height * height);
         for (int columnCount = 0; columnCount < width; columnCount++){
             for (int rowCount = 0; rowCount < width; rowCount++){
-                // draw images...
+                TokenColor currentTokenColor = gameBoard.getBoard()[columnCount][rowCount].getTokenColor();
+                JPanel jp = new JPanel();
+                jp.setBounds(columnCount * tokenSize.width, rowCount * tokenSize.width, tokenSize.width, tokenSize.height);
+                jp.getGraphics().drawImage(currentTokenColor == TokenColor.Red ? redTokenImage : yellowTokenImage, tokenSize.width, tokenSize.height, null);
             }    
         }
         centerPanel.add(gameBoardPanel);
-    }    
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -252,7 +272,7 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
     private void initComponents() {
 
         topPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        welcomeLabel = new javax.swing.JLabel();
         centerPanel = new javax.swing.JPanel();
         startGomputerGame = new javax.swing.JButton();
         startLocalMultiplayerGame = new javax.swing.JButton();
@@ -263,7 +283,7 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
         setMinimumSize(new java.awt.Dimension(720, 405));
         setPreferredSize(new java.awt.Dimension(720, 405));
 
-        jLabel1.setText("Willkommen zu Viergewinnt!");
+        welcomeLabel.setText("Willkommen zu Viergewinnt!");
 
         javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
         topPanel.setLayout(topPanelLayout);
@@ -271,20 +291,20 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
             topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(topPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
+                .addComponent(welcomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
                 .addContainerGap())
         );
         topPanelLayout.setVerticalGroup(
             topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(topPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                .addComponent(welcomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
 
-        centerPanel.setLayout(new java.awt.GridLayout());
+        centerPanel.setLayout(new java.awt.GridLayout(1, 0));
 
         startGomputerGame.setText("Computer");
         startGomputerGame.addActionListener(new java.awt.event.ActionListener() {
@@ -373,10 +393,10 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton startGomputerGame;
     private javax.swing.JButton startLANGame;
     private javax.swing.JButton startLocalMultiplayerGame;
     private javax.swing.JPanel topPanel;
+    private javax.swing.JLabel welcomeLabel;
     // End of variables declaration//GEN-END:variables
 }

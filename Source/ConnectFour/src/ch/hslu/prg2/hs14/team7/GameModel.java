@@ -9,6 +9,7 @@ import ch.hslu.prg2.hs14.team7.player.ILanPlayerListener;
 import ch.hslu.prg2.hs14.team7.player.IPlayerListener;
 import ch.hslu.prg2.hs14.team7.player.LanPlayer;
 import ch.hslu.prg2.hs14.team7.player.Player;
+import java.util.Observable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Random;

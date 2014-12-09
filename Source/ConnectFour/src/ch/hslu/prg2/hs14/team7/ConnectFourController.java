@@ -21,7 +21,7 @@ public class ConnectFourController {
     private ConnectFourGUI gui;
     private Player thisPlayer; // der Spieler, der den Controller erstellt (beim ersten Spiel auf dem UI).
     
-    private static final int defaultPort = 8080;
+    private static final int defaultPort = 10000;
     
     private List<IControllerListener> listeners = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class ConnectFourController {
     /**
      * Erstellt ein neues Spiel gegen einen lokalen Gegner
      *
-     * @param localName
+     * @param enemyPlayer
      */
     public void newLocalGame(Player enemyPlayer) {
         gameModel = new GameModel(thisPlayer, enemyPlayer);
@@ -63,6 +63,7 @@ public class ConnectFourController {
     /**
      * Verbindet den Spieler mit einem Gegner, der sich als Host zur Verfügung stellt.
      *
+     * @param port
      * @param ip
      */
     public void joinLanGame(int port, String ip) {
@@ -98,7 +99,7 @@ public class ConnectFourController {
     /**
      * Verbindet den Spieler mit einem Gegner, der sich als Host zur Verfügung stellt.
      *
-     * @param ip
+     * @param port
      */
     public void hostLanGame(int port) {
         TokenColor lanColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
@@ -160,19 +161,19 @@ public class ConnectFourController {
     }
     
     public void runGame() {
-        if (this.isGameRunning()){
-            if (this.hasWinner()){
-                TokenColor winnerColor = getGameModel().getCurrentPlayer().getTokenColor();
-                for (IControllerListener listener : listeners){
-                    if (winnerColor.equals(thisPlayer.getTokenColor())){
-                        listener.thisPlayerWonAGame(this.getGameBoard());
-                    }
-                    else{
-                        listener.enemyPlayerWonAGame(this.getGameBoard());
-                    }
-                }
-            }else{
+        if (this.gameModel != null && this.gameModel.getGameBoard() != null){
+            while(!this.hasWinner()){
                 nextTurn();
+            }
+            
+            TokenColor winnerColor = getGameModel().getCurrentPlayer().getTokenColor();
+            for (IControllerListener listener : listeners){
+                if (winnerColor.equals(thisPlayer.getTokenColor())){
+                    listener.thisPlayerWonAGame(this.getGameBoard());
+                }
+                else{
+                    listener.enemyPlayerWonAGame(this.getGameBoard());
+                }
             }
         }
         this.gameModel = null;
