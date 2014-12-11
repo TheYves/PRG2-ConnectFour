@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.DebugGraphics;
+import javax.swing.JLabel;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /**
@@ -165,8 +166,8 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
     }
 
     private void displayWinner(Player player) {
-        welcomeLabel.setText("Player: " + player.getNickname() + " has won!");
-        welcomeLabel.setForeground(player.getTokenColor() == TokenColor.Yellow ? Color.YELLOW : Color.RED);
+        titleLabel.setText("Player: " + player.getNickname() + " has won!");
+        titleLabel.setForeground(player.getTokenColor() == TokenColor.Yellow ? Color.YELLOW : Color.RED);
     }
     
     private void addListener(IGUIListener listener){
@@ -247,19 +248,27 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
     }
     
     public void drawGameBoard(GameBoard gameBoard) {
+        centerPanel.removeAll();
+        this.repaint();
+
         int width = gameBoard.getBoard().length;
         int height = gameBoard.getBoard()[0].length;
         gameBoardPanel = new JPanel();
         gameBoardPanel.setBounds(0, 0, tokenSize.width * width, tokenSize.height * height);
         for (int columnCount = 0; columnCount < width; columnCount++){
-            for (int rowCount = 0; rowCount < width; rowCount++){
+            for (int rowCount = 0; rowCount < height; rowCount++){
                 TokenColor currentTokenColor = gameBoard.getBoard()[columnCount][rowCount].getTokenColor();
                 JPanel jp = new JPanel();
                 jp.setBounds(columnCount * tokenSize.width, rowCount * tokenSize.width, tokenSize.width, tokenSize.height);
-                jp.getGraphics().drawImage(currentTokenColor == TokenColor.Red ? redTokenImage : yellowTokenImage, tokenSize.width, tokenSize.height, null);
+                //jp.getGraphics().drawImage(currentTokenColor == TokenColor.Red ? redTokenImage : yellowTokenImage, tokenSize.width, tokenSize.height, null);
+                JLabel label = new JLabel();
+                label.setBounds(0,0, tokenSize.width, tokenSize.height);
+                label.setText(currentTokenColor.name());
+                jp.add(label);
             }    
         }
         centerPanel.add(gameBoardPanel);
+        this.repaint();
     }
     
     /**
@@ -271,8 +280,7 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        topPanel = new javax.swing.JPanel();
-        welcomeLabel = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
         centerPanel = new javax.swing.JPanel();
         startGomputerGame = new javax.swing.JButton();
         startLocalMultiplayerGame = new javax.swing.JButton();
@@ -283,26 +291,8 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
         setMinimumSize(new java.awt.Dimension(720, 405));
         setPreferredSize(new java.awt.Dimension(720, 405));
 
-        welcomeLabel.setText("Willkommen zu Viergewinnt!");
-
-        javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
-        topPanel.setLayout(topPanelLayout);
-        topPanelLayout.setHorizontalGroup(
-            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(topPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(welcomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        topPanelLayout.setVerticalGroup(
-            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(topPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(welcomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
+        titleLabel.setText("Willkommen zu Viergewinnt!");
+        getContentPane().add(titleLabel, java.awt.BorderLayout.PAGE_START);
 
         centerPanel.setLayout(new java.awt.GridLayout(1, 0));
 
@@ -346,8 +336,10 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
                 null,
                 levels,
                 levels[0]);
-            controller.newComputerGame(uiUpdater, computerLevel);
-            drawGameBoard(controller.getGameBoard());
+            if (computerLevel != null){
+                controller.newComputerGame(uiUpdater, computerLevel);
+                drawGameBoard(controller.getGameBoard());
+            }
         }
     }//GEN-LAST:event_startGomputerGameActionPerformed
 
@@ -396,7 +388,6 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton startGomputerGame;
     private javax.swing.JButton startLANGame;
     private javax.swing.JButton startLocalMultiplayerGame;
-    private javax.swing.JPanel topPanel;
-    private javax.swing.JLabel welcomeLabel;
+    private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 }

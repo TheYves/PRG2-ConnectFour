@@ -43,7 +43,7 @@ public class ConnectFourController {
         thisPlayer.addPlayerListener(listener);
         TokenColor computerColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
         gameModel = new GameModel(thisPlayer, new ComputerPlayer(level, computerColor));
-        runGame();
+        //runGame();
     }
 
     /**
