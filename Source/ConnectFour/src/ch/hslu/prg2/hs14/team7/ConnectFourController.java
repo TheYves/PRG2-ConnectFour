@@ -84,7 +84,7 @@ public class ConnectFourController {
             }
 
             @Override
-            public void moveMade(GameBoard gameBoard, int col) {
+            public void moveMade(GameBoard gameBoard) {
                 ConnectFourController.this.getGameModel().setGameBoard(gameBoard);
                 nextTurn();
             }
@@ -119,7 +119,7 @@ public class ConnectFourController {
             }
 
             @Override
-            public void moveMade(GameBoard gameBoard, int col) {
+            public void moveMade(GameBoard gameBoard) {
                 ConnectFourController.this.getGameModel().setGameBoard(gameBoard);
                 nextTurn();
             }
@@ -153,10 +153,10 @@ public class ConnectFourController {
             nextPlayer = currentPlayer == thisPlayer ? enemyPlayer : thisPlayer;
         }
         getGameModel().setCurrentPlayer(nextPlayer);
-        int move = nextPlayer.makeMove(getGameModel().getGameBoard());
+        nextPlayer.makeMove(getGameModel().getGameBoard());
         
         for (IControllerListener listener : listeners){
-            listener.moveMade(this.getGameBoard(), move, nextPlayer.getTokenColor());
+            listener.moveMade(this.getGameBoard(), nextPlayer.getTokenColor());
         }
     }
     

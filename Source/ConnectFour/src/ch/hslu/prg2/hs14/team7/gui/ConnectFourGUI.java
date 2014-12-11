@@ -141,7 +141,7 @@ public class ConnectFourGUI extends javax.swing.JFrame implements Runnable {
         controller.addListener(new IControllerListener() {
 
             @Override
-            public void moveMade(GameBoard board, int column, TokenColor tokenColor) {
+            public void moveMade(GameBoard board, TokenColor tokenColor) {
                 // es gibt momentan nur ein einziges Board, daher gibt es keinen Switch auf das GameBoard.
                 drawGameBoard(board);
             }

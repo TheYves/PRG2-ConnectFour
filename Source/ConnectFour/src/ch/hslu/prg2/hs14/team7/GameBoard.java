@@ -5,11 +5,13 @@
  */
 package ch.hslu.prg2.hs14.team7;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Christoph
  */
-public class GameBoard {
+public class GameBoard implements Serializable {
     private Token[][] board;
     
     private static final int defaultSizeX = 7;
