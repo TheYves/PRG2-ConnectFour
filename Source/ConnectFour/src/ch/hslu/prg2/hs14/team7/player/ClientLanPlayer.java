@@ -26,8 +26,10 @@ public class ClientLanPlayer extends LanPlayer implements Runnable {
 	public void run() {
 		try {
 			Socket socket = new Socket(ip, port);
-			isReady();
+			System.out.println("ClientLanPlayer: Connection to host established.");
 			setSocket(socket);
+			isReady();
+			listen();
 		} catch (IOException e) {
 			connectionLost();
 		}

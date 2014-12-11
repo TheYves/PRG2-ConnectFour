@@ -5,11 +5,13 @@
  */
 package ch.hslu.prg2.hs14.team7;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Christoph
  */
-public class Token {
+public class Token implements Serializable {
     private TokenColor tokenColor = TokenColor.None;
     
     public Token(TokenColor tokenColor)

@@ -16,26 +16,16 @@ import java.util.List;
 /**
  * @author Nick
  */
-public abstract class LanPlayer extends Player implements Runnable {
+public abstract class LanPlayer extends Player {
 
-	private Thread thread;
 	private TokenColor tokenColor;
 	private Socket socket;
-	private GameBoard gameBoard;
 	protected List<ILanPlayerListener> lanListeners = new ArrayList<>();
 
 	public LanPlayer(TokenColor tokenColor) {
 		super("LAN Player", tokenColor);
 		this.tokenColor = tokenColor;
 	}
-
-	/*
-	protected void start(Socket socket) {
-		this.socket = socket;
-		thread = new Thread(this);
-		thread.start();
-		isReady();
-	}*/
 
 	protected void setSocket(Socket socket) {
 		this.socket = socket;
@@ -63,34 +53,6 @@ public abstract class LanPlayer extends Player implements Runnable {
 		}
 	}
 
-	/*
-	@Override
-	public void run() {
-		while(true) {
-			try {
-				// das gameboard soll an den gegnet gesendet werden
-				if(gameBoard != null) {
-					ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-					oos.writeObject(gameBoard);
-					this.gameBoard = null;
-					System.out.println("Board sent");
-				} else { // wir warten auf eine antwort des gegners
-					ObjectInputStream ios = new ObjectInputStream(socket.getInputStream());
-					GameBoard enemyGameBoard = (GameBoard) ios.readObject();
-					super.moveMade(enemyGameBoard);
-					System.out.println("Board received");
-				}
-			} catch (IOException e) {
-				break;
-			} catch (ClassNotFoundException e) {
-				break;
-			}
-		}
-
-		connectionLost();
-	}
-	*/
-
 	@Override
 	public void makeMove(GameBoard gameBoard) {
 		if (socket == null || !socket.isConnected()) {
@@ -105,29 +67,37 @@ public abstract class LanPlayer extends Player implements Runnable {
 			connectionLost();
 		}
 
-		Thread t = new Thread(this);
-		t.start();
+		System.out.println("Board sent to network player. Waiting for an answer...");
 
-		System.out.println("Board sent");
+		// listen for an answer
+		listen();
 	}
 
-	public void run() {
-		while (true) {
-			if (socket == null || !socket.isConnected()) {
-				connectionLost();
-				break;
-			}
-			try {
-				ObjectInputStream oos = new ObjectInputStream(socket.getInputStream());
-				GameBoard gameBoard = (GameBoard) oos.readObject();
-				moveMade(gameBoard);
-				break;
-			} catch (IOException e) {
-				e.printStackTrace();
-				connectionLost();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				connectionLost();
+	protected void listen() {
+		Thread t = new Thread(new SocketListener());
+		t.start();
+	}
+
+	private class SocketListener implements Runnable {
+		@Override
+		public void run() {
+			while (true) {
+				if (socket == null || !socket.isConnected()) {
+					connectionLost();
+					break;
+				}
+				try {
+					ObjectInputStream oos = new ObjectInputStream(socket.getInputStream());
+					GameBoard gameBoard = (GameBoard) oos.readObject();
+					moveMade(gameBoard);
+					break;
+				} catch (IOException e) {
+					e.printStackTrace();
+					connectionLost();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					connectionLost();
+				}
 			}
 		}
 	}
