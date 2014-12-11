@@ -19,7 +19,7 @@ public class LocalPlayer extends Player {
     }
 
     @Override
-    public int makeMove(GameBoard gameBoard) {
+    public void makeMove(GameBoard gameBoard) {
         throw new UnsupportedOperationException("Ask UI for next move."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -23,14 +23,15 @@ public class ComputerPlayer extends Player {
     }
 
     @Override
-    public int makeMove(GameBoard gameBoard)
+    public void makeMove(GameBoard gameBoard)
     {
         Token[][] board = gameBoard.getBoard();
         Random grn = new Random();
         
         if (this.level == ComputerLevel.Low)
         {
-            return grn.nextInt(board.length);
+            //return grn.nextInt(board.length);
+            // TODO super.moveMade(gameboard);
         }
         else
         {
@@ -43,7 +44,8 @@ public class ComputerPlayer extends Player {
             // Wenn das Board leer ist, dann immer die Mitte
             if (gameBoard.isBoardEmpty())
             {
-                return (int)(board.length / 2) + 1; 
+                //return (int)(board.length / 2) + 1;
+                // TODO super.moveMade(gameboard);
             }
 
             // Finaler Zug?
@@ -52,7 +54,8 @@ public class ComputerPlayer extends Player {
                 row = gameBoard.getTokenRow(column);
                 if (row != -1 && gameBoard.checkXInARow(column, row, 4, getTokenColor()))
                 {
-                    return column; // Gewonnen
+                    //return column; // Gewonnen
+                    // TODO super.moveMade(gameboard);
                 }
             }
 
@@ -62,7 +65,8 @@ public class ComputerPlayer extends Player {
                 row = gameBoard.getTokenRow(column);
                 if (row != -1 && gameBoard.checkXInARow(column, row, 4, getEnemyColor()))
                 {
-                    return column;
+                    //return column;
+                    // TODO super.moveMade(gameboard);
                 }
             }
 
@@ -111,12 +115,14 @@ public class ComputerPlayer extends Player {
             if (!possibleSolutions.isEmpty())
             {
                 Collections.shuffle(possibleSolutions);
-                return (int)possibleSolutions.get(0);
+                //return (int)possibleSolutions.get(0);
+                // TODO super.moveMade(gameboard);
             }
             
             if (this.level == ComputerLevel.Medium)
             {
-                return grn.nextInt(board.length);
+                //return grn.nextInt(board.length);
+                // TODO super.moveMade(gameboard);
             }
 
             if (this.level == ComputerLevel.High)
@@ -146,7 +152,8 @@ public class ComputerPlayer extends Player {
                     }
                     while (board[column][topRow].getTokenColor() != TokenColor.None);
 
-                    return column;
+                    //return column;
+                    // TODO super.moveMade(gameboard);
                   }
                 else
                 {
@@ -157,10 +164,12 @@ public class ComputerPlayer extends Player {
                     while (veryBadIdeas.contains(column));
                 }
 
-                return column;
+                //return column;
+                // TODO super.moveMade(gameboard);
             }
         }
         
-        return grn.nextInt(board.length);
+        //return grn.nextInt(board.length);
+        // TODO super.moveMade(gameboard);
     }
 }

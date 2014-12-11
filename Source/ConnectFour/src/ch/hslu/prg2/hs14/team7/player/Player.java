@@ -17,8 +17,6 @@ public abstract class Player
     private TokenColor tokenColor;
     protected List<IPlayerListener> listeners = new ArrayList<IPlayerListener>();
 
-    private GameBoard gameBoard;
-
     public Player(String nickname, TokenColor tokenColor){
         if (tokenColor == TokenColor.None)
             throw new NoColorException();
@@ -30,7 +28,13 @@ public abstract class Player
         return nickname;
     }
 
-    public abstract int makeMove(GameBoard gameBoard);
+    public abstract void makeMove(GameBoard gameBoard);
+
+    protected void moveMade(GameBoard gameBoard) {
+		for (IPlayerListener listener : listeners) {
+			listener.moveMade(gameBoard);
+		}
+	}
 
     public void addPlayerListener(IPlayerListener listener) {
         listeners.add(listener);
