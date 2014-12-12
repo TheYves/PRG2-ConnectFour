@@ -49,9 +49,9 @@ public class ConnectFourController {
 		Player enemyPlayer;
 
 		switch(gameModel.getGameMode()) {
-			/*case Computer:
-				enemyPlayer = new ComputerPlayer(TokenColor.Red);
-				break;*/
+			case Computer:
+				enemyPlayer = new ComputerPlayer(ComputerLevel.High, TokenColor.Red);
+				break;
 			case Local:
 				enemyPlayer = new LocalPlayer(TokenColor.Red);
 				break;

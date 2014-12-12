@@ -1,12 +1,10 @@
 package ch.hslu.prg2.hs14.team7.gui;
 
-import ch.hslu.prg2.hs14.team7.ConnectFourController;
-import ch.hslu.prg2.hs14.team7.GameBoard;
-import ch.hslu.prg2.hs14.team7.GameModel;
-import ch.hslu.prg2.hs14.team7.IControllerListener;
+import ch.hslu.prg2.hs14.team7.*;
 import ch.hslu.prg2.hs14.team7.player.LocalPlayer;
 import ch.hslu.prg2.hs14.team7.player.Player;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -147,23 +145,22 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			}
 		});
 
-		BufferedImageLoader loader = new BufferedImageLoader();
 		try {
-			background = loader.load("resources/background.jpg");
-			overlay = loader.load("resources/overlay.png");
-			foreground = loader.load("resources/foreground.png");
-			player01Text = loader.load("resources/player_01_text.png");
-			player02Text = loader.load("resources/player_02_text.png");
-			playerPcText = loader.load("resources/player_Pc_text.png");
-			player01WinnerText = loader.load("resources/player_01_sieger.png");
-			player02WinnerText = loader.load("resources/player_02_sieger.png");
-			playerPcWinnerText = loader.load("resources/player_Pc_sieger.png");
-			girl01 = loader.load("resources/girl_01.png");
-			girl02 = loader.load("resources/girl_02.png");
-			stoneImages[1] = loader.load("resources/player01.png");
-			stoneImages[2] = loader.load("resources/player02.png");
-			stoneImages[3] = loader.load("resources/player01_lowlight.png");
-			stoneImages[4] = loader.load("resources/player02_lowlight.png");
+			background = ImageIO.read(getClass().getResource("resources/background.jpg"));
+			overlay = ImageIO.read(getClass().getResource("resources/overlay.png"));
+			foreground = ImageIO.read(getClass().getResource("resources/foreground.png"));
+			player01Text = ImageIO.read(getClass().getResource("resources/player_01_text.png"));
+			player02Text = ImageIO.read(getClass().getResource("resources/player_02_text.png"));
+			playerPcText = ImageIO.read(getClass().getResource("resources/player_Pc_text.png"));
+			player01WinnerText = ImageIO.read(getClass().getResource("resources/player_01_sieger.png"));
+			player02WinnerText = ImageIO.read(getClass().getResource("resources/player_02_sieger.png"));
+			playerPcWinnerText = ImageIO.read(getClass().getResource("resources/player_Pc_sieger.png"));
+			girl01 = ImageIO.read(getClass().getResource("resources/girl_01.png"));
+			girl02 = ImageIO.read(getClass().getResource("resources/girl_02.png"));
+			stoneImages[1] = ImageIO.read(getClass().getResource("resources/player01.png"));
+			stoneImages[2] = ImageIO.read(getClass().getResource("resources/player02.png"));
+			stoneImages[3] = ImageIO.read(getClass().getResource("resources/player01_lowlight.png"));
+			stoneImages[4] = ImageIO.read(getClass().getResource("resources/player02_lowlight.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -171,7 +168,6 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		controller.addListener(new IControllerListener() {
 			@Override
 			public void moveMade(GameBoard board, Player nextPlayer) {
-
 			}
 
 			@Override
@@ -223,7 +219,33 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		}
 		setLocked(isAnimated);*/
 
-		g.drawImage(foreground, 175, 156, this);
+		int foregroundOffsetX = 175;
+		int foregroundOffsetY = 156;
+		Token[][] columns = this.gameModel.getGameBoard().getBoard();
+		for (int columnCount = 0; columnCount < columns.length; columnCount++){
+			Token[] currentColumn = columns[columnCount];
+			for (int rowCount = 0; rowCount < currentColumn.length; rowCount++){
+				Token token = currentColumn[rowCount];
+				TokenColor currentColor = token.getTokenColor();
+				BufferedImage tokenImage = null;
+				int currentRow = currentColumn.length - rowCount -1;
+
+				switch (currentColor){
+					case Red:
+						tokenImage = stoneImages[1];
+						break;
+					case Yellow:
+						tokenImage = stoneImages[2];
+						break;
+				}
+
+				if (tokenImage != null){
+					g.drawImage(tokenImage, foregroundOffsetX + 20 + (70 * columnCount + 20), foregroundOffsetY + 24 + (70 * currentRow + 20), this);
+				}
+			}
+		}
+
+		g.drawImage(foreground, foregroundOffsetX, foregroundOffsetY, this);
 
 		/*if (isWin) {
 			switch (gameMode) {
