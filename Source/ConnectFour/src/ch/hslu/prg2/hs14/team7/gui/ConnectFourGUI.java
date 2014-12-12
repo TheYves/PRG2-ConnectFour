@@ -128,7 +128,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		//frame.setSize(WIDTH+200, HEIGHT);
 		frame.setVisible(true);
 
-		addKeyListener(new KeyAdapter() {
+		frame.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
 				super.keyTyped(keyEvent);

@@ -45,7 +45,7 @@ public class ConnectFourController {
 	}
 
 	private void startGame() {
-		Player thisPlayer = new LocalPlayer(TokenColor.Yellow);
+		Player thisPlayer = new LocalPlayer("Player 1", TokenColor.Yellow);
 		Player enemyPlayer;
 
 		switch(gameModel.getGameMode()) {
@@ -53,7 +53,7 @@ public class ConnectFourController {
 				enemyPlayer = new ComputerPlayer(ComputerLevel.High, TokenColor.Red);
 				break;
 			case Local:
-				enemyPlayer = new LocalPlayer(TokenColor.Red);
+				enemyPlayer = new LocalPlayer("Player 2", TokenColor.Red);
 				break;
 			/*case LANClient:
 				//TODO
@@ -62,7 +62,7 @@ public class ConnectFourController {
 				//TODO
 				break;*/
 			default:
-				enemyPlayer = new LocalPlayer(TokenColor.Red);
+				enemyPlayer = new LocalPlayer("Player 2", TokenColor.Red);
 				break;
 		}
 

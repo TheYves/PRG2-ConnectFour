@@ -16,8 +16,8 @@ public class LocalPlayer extends Player {
 
     GameBoard gameBoard;
 
-    public LocalPlayer(TokenColor tokenColor) {
-        super(tokenColor);
+    public LocalPlayer(String nickname, TokenColor tokenColor) {
+        super(nickname, tokenColor);
     }
 
     @Override

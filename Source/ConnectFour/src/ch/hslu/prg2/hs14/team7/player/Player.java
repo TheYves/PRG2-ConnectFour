@@ -24,13 +24,6 @@ public abstract class Player
         this.tokenColor = tokenColor;
     }
 
-    public Player(TokenColor tokenColor){
-        if (tokenColor == TokenColor.None)
-            throw new NoColorException();
-        this.nickname = "Player";
-        this.tokenColor = tokenColor;
-    }
-
     public String getNickname(){
         return nickname;
     }
