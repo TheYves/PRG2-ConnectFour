@@ -11,9 +11,6 @@ import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Yves Hohl (yves.hohl@stud.hslu.ch) on 12.12.2014.
@@ -21,28 +18,15 @@ import java.util.logging.Logger;
 public class ConnectFourGUI extends Canvas implements Runnable {
 
 	public static final int WIDTH = 885;
-	public static final int HEIGHT = 600;
+	public static final int HEIGHT = 634;
 	public static final String TITLE = "Vier Gewinnt";
 	private JFrame frame;
 
-	private boolean running = false;
-	private boolean locked = false;
 	private Thread thread;
-	private int playingPlayer = 1;
-	boolean isWin = false;
+	Player winner = null;
 
-	private BufferedImage background;
-	private BufferedImage overlay;
-	private BufferedImage foreground;
-	private BufferedImage player01Text;
-	private BufferedImage player02Text;
-	private BufferedImage playerPcText;
-	private BufferedImage player01WinnerText;
-	private BufferedImage player02WinnerText;
-	private BufferedImage playerPcWinnerText;
-	private BufferedImage girl01;
-	private BufferedImage girl02;
-	private BufferedImage[] stoneImages = new BufferedImage[5];
+	private BufferedImage background, overlay, grid, turnYellow, turnRed, turnComputer, wonRed, wonYellow,
+			wonComputer, tokenRed, tokenYellow;
 
 	private GameModel gameModel;
 	private ConnectFourController controller;
@@ -64,7 +48,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		JPanel titlePanel = new JPanel();
 		JLabel titleabel = new JLabel("Vier Gewinnt - Bitte Spielemodus auswählen");
 
-		String[] gameModes = {"Gegen PC", "2 Player - am PC", "LAN Server", "LAN Client"};
+		String[] gameModes = {"Gegen Computer", "2 Spieler lokal", "LAN Server", "LAN Client"};
 		JPanel modesPanel = new JPanel();
 		JLabel modesLabel = new JLabel("Modus:");
 		JComboBox modesCombo = new JComboBox(gameModes);
@@ -125,16 +109,15 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
-		//frame.setSize(WIDTH+200, HEIGHT);
 		frame.setVisible(true);
 
 		frame.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
 				super.keyTyped(keyEvent);
-				if(gameModel.getCurrentPlayer() instanceof LocalPlayer) {
-					char charcharBings =  keyEvent.getKeyChar();
-					if(Character.isDigit(charcharBings)){
+				if (gameModel.getCurrentPlayer() instanceof LocalPlayer) {
+					char charcharBings = keyEvent.getKeyChar();
+					if (Character.isDigit(charcharBings)) {
 						int col = Character.getNumericValue(charcharBings) - 1;
 						if (col >= 0 && col < gameModel.getGameBoard().getBoard().length) {
 							((LocalPlayer) gameModel.getCurrentPlayer()).chooseColumn(col);
@@ -148,31 +131,23 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		try {
 			background = ImageIO.read(getClass().getResource("resources/background.jpg"));
 			overlay = ImageIO.read(getClass().getResource("resources/overlay.png"));
-			foreground = ImageIO.read(getClass().getResource("resources/foreground.png"));
-			player01Text = ImageIO.read(getClass().getResource("resources/player_01_text.png"));
-			player02Text = ImageIO.read(getClass().getResource("resources/player_02_text.png"));
-			playerPcText = ImageIO.read(getClass().getResource("resources/player_Pc_text.png"));
-			player01WinnerText = ImageIO.read(getClass().getResource("resources/player_01_sieger.png"));
-			player02WinnerText = ImageIO.read(getClass().getResource("resources/player_02_sieger.png"));
-			playerPcWinnerText = ImageIO.read(getClass().getResource("resources/player_Pc_sieger.png"));
-			girl01 = ImageIO.read(getClass().getResource("resources/girl_01.png"));
-			girl02 = ImageIO.read(getClass().getResource("resources/girl_02.png"));
-			stoneImages[1] = ImageIO.read(getClass().getResource("resources/player01.png"));
-			stoneImages[2] = ImageIO.read(getClass().getResource("resources/player02.png"));
-			stoneImages[3] = ImageIO.read(getClass().getResource("resources/player01_lowlight.png"));
-			stoneImages[4] = ImageIO.read(getClass().getResource("resources/player02_lowlight.png"));
+			grid = ImageIO.read(getClass().getResource("resources/grid.png"));
+			turnYellow = ImageIO.read(getClass().getResource("resources/turn_yellow.png"));
+			turnRed = ImageIO.read(getClass().getResource("resources/turn_red.png"));
+			turnComputer = ImageIO.read(getClass().getResource("resources/turn_computer.png"));
+			wonYellow = ImageIO.read(getClass().getResource("resources/end_yellow.png"));
+			wonRed = ImageIO.read(getClass().getResource("resources/end_red.png"));
+			wonComputer = ImageIO.read(getClass().getResource("resources/end_computer.png"));
+			tokenRed = ImageIO.read(getClass().getResource("resources/token_red.png"));
+			tokenYellow = ImageIO.read(getClass().getResource("resources/token_yellow.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		controller.addListener(new IControllerListener() {
 			@Override
-			public void moveMade(GameBoard board, Player nextPlayer) {
-			}
-
-			@Override
 			public void gameFinished(GameBoard board, Player winner) {
-
+				ConnectFourGUI.this.winner = winner;
 			}
 		});
 
@@ -207,17 +182,6 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 		g.drawImage(background, 0, 0, this);
 		g.drawImage(overlay, 175, 156, this);
-		//g.drawImage(girl01, -35, 200, this);
-		//g.drawImage(girl02, 635, 230, this);
-
-		/*boolean isAnimated = false;
-		for (int idx = 0; idx < stones.size(); idx++) {
-			stones.get(idx).render(g);
-			if (stones.get(idx).isMoving()) {
-				isAnimated = true;
-			}
-		}
-		setLocked(isAnimated);*/
 
 		int foregroundOffsetX = 175;
 		int foregroundOffsetY = 156;
@@ -232,10 +196,10 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 				switch (currentColor){
 					case Red:
-						tokenImage = stoneImages[1];
+						tokenImage = tokenRed;
 						break;
 					case Yellow:
-						tokenImage = stoneImages[2];
+						tokenImage = tokenYellow;
 						break;
 				}
 
@@ -245,148 +209,24 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			}
 		}
 
-		g.drawImage(foreground, foregroundOffsetX, foregroundOffsetY, this);
+		g.drawImage(grid, foregroundOffsetX, foregroundOffsetY, this);
 
-		/*if (isWin) {
-			switch (gameMode) {
-				case Player_PC:
-					if (playingPlayer - 1 == 1) {
-						g.drawImage(player01WinnerText, 20, 10, this);
-					} else {
-						g.drawImage(playerPcWinnerText, 20, 10, this);
-					}
+		if (winner != null) {
+			switch (winner.getTokenColor()) {
+				case Yellow:
+					g.drawImage(wonYellow, 20, 10, this);
 					break;
-				case Player_Player:
-					if (playingPlayer - 1 == 1) {
-						g.drawImage(player01WinnerText, 20, 10, this);
-					} else {
-						g.drawImage(player02WinnerText, 20, 10, this);
-					}
+				case Red:
+					g.drawImage(wonRed, 20, 10, this);
 					break;
 			}
 		} else {
-			switch (gameMode) {
-				case Player_PC:
-					if (playingPlayer == 1) {
-						g.drawImage(player01Text, 20, 10, this);
-					} else {
-						g.drawImage(playerPcText, 20, 10, this);
-					}
+			switch (gameModel.getCurrentPlayer().getTokenColor()) {
+				case Yellow:
+					g.drawImage(turnYellow, 20, 10, this);
 					break;
-				case Player_Player:
-					if (playingPlayer == 1) {
-						g.drawImage(player01Text, 20, 10, this);
-					} else {
-						g.drawImage(player02Text, 20, 10, this);
-					}
-					break;
-			}
-		}*/
-
-		g.dispose();
-		bs.show();
-	}
-
-
-/*
-	public synchronized void insertStone(int col, int row, int player) {
-		if (player == 1 || player == 2) {
-			BufferedImage stoneImage = stoneImages[player];
-			Spielstein newStone = new Spielstein(col, row, player, stoneImage, this);
-			stones.add(newStone);
-			switch (newStone.getPlayer()) {
-				case 1:
-					playingPlayer = 2;
-					break;
-				case 2:
-					playingPlayer = 1;
-					break;
-			}
-		} else {
-			System.out.println("Player \"" + player + "\" does not exist.");
-		}
-	}
-
-
-
-	public synchronized void stop() {
-		if (!running) {
-			return;
-		}
-		running = false;
-		try {
-			thread.join();
-		} catch (InterruptedException ex) {
-			Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		System.exit(1);
-	}
-
-
-
-	public void tick() {
-		for (int idx = 0; idx < stones.size(); idx++) {
-			stones.get(idx).tick();
-		}
-	}
-
-	public void render() {
-		BufferStrategy bs = getBufferStrategy();
-		if (bs == null) {
-			createBufferStrategy(2);
-			return;
-		}
-
-		Graphics g = bs.getDrawGraphics();
-
-		g.drawImage(background, 0, 0, this);
-		g.drawImage(overlay, 175, 156, this);
-		g.drawImage(girl01, -35, 200, this);
-		g.drawImage(girl02, 635, 230, this);
-
-		boolean isAnimated = false;
-		for (int idx = 0; idx < stones.size(); idx++) {
-			stones.get(idx).render(g);
-			if (stones.get(idx).isMoving()) {
-				isAnimated = true;
-			}
-		}
-		setLocked(isAnimated);
-
-		g.drawImage(foreground, 175, 156, this);
-
-		if (isWin) {
-			switch (gameMode) {
-				case Player_PC:
-					if (playingPlayer - 1 == 1) {
-						g.drawImage(player01WinnerText, 20, 10, this);
-					} else {
-						g.drawImage(playerPcWinnerText, 20, 10, this);
-					}
-					break;
-				case Player_Player:
-					if (playingPlayer - 1 == 1) {
-						g.drawImage(player01WinnerText, 20, 10, this);
-					} else {
-						g.drawImage(player02WinnerText, 20, 10, this);
-					}
-					break;
-			}
-		} else {
-			switch (gameMode) {
-				case Player_PC:
-					if (playingPlayer == 1) {
-						g.drawImage(player01Text, 20, 10, this);
-					} else {
-						g.drawImage(playerPcText, 20, 10, this);
-					}
-					break;
-				case Player_Player:
-					if (playingPlayer == 1) {
-						g.drawImage(player01Text, 20, 10, this);
-					} else {
-						g.drawImage(player02Text, 20, 10, this);
-					}
+				case Red:
+					g.drawImage(turnRed, 20, 10, this);
 					break;
 			}
 		}
@@ -394,40 +234,5 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		g.dispose();
 		bs.show();
 	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void highlight(ArrayList<Spielstein> winnerStones) {
-		for (Spielstein stone : stones) {
-			boolean isWinnerStone = false;
-			for (Spielstein winnerStone : winnerStones) {
-				if (stone.getCol() == winnerStone.getCol()
-						&& stone.getRow() == winnerStone.getRow()) {
-					isWinnerStone = true;
-					break;
-				}
-			}
-			if (!isWinnerStone) {
-				if (stone.getPlayer() == 1) {
-					stone.setImage(stoneImages[3]);
-				} else {
-					stone.setImage(stoneImages[4]);
-				}
-			}
-		}
-		isWin = true;
-	}
-
-	public Thread getThread() {
-		return thread;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
-	}
-
-	*/
 
 }

@@ -26,7 +26,9 @@ public class LocalPlayer extends Player {
     }
 
     public void chooseColumn(int col) {
-        gameBoard.insertToken(col, getTokenColor());
-        moveMade(gameBoard);
+        if(gameBoard.insertToken(col, getTokenColor())) {
+            moveMade(gameBoard);
+        }
     }
+
 }
