@@ -15,7 +15,7 @@ public abstract class Player
 {
     protected String nickname = "Player";
     private TokenColor tokenColor;
-    protected List<IPlayerListener> listeners = new ArrayList<IPlayerListener>();
+    private List<IPlayerListener> listeners = new ArrayList<IPlayerListener>();
 
     public Player(String nickname, TokenColor tokenColor){
         if (tokenColor == TokenColor.None)

@@ -20,15 +20,15 @@ public class ConnectFourController {
     private GameModel gameModel; // das model
     private ConnectFourGUI gui;
     private Player thisPlayer; // der Spieler, der den Controller erstellt (beim ersten Spiel auf dem UI).
-    
+
     private static final int defaultPort = 10000;
-    
+
     private List<IControllerListener> listeners = new ArrayList<>();
 
     public ConnectFourController(Player thisPlayer){
         this.thisPlayer = thisPlayer;
     }
-    
+
     public void addListener(IControllerListener listener){
         listeners.add(listener);
     }
@@ -55,10 +55,6 @@ public class ConnectFourController {
         gameModel = new GameModel(thisPlayer, enemyPlayer);
         runGame();
     }
-    
-    public void joinLanGame(String ip) {
-        joinLanGame(defaultPort, ip);
-    }
 
     /**
      * Verbindet den Spieler mit einem Gegner, der sich als Host zur Verfügung stellt.
@@ -75,12 +71,12 @@ public class ConnectFourController {
         lanPlayer.addPlayerListener(new ILanPlayerListener() {
             @Override
             public void isReady() {
-                    nextTurn();
+            	nextTurn();
             }
 
             @Override
             public void connectionLost() {
-                    // TODO
+                // TODO
             }
 
             @Override
@@ -110,12 +106,12 @@ public class ConnectFourController {
         lanPlayer.addPlayerListener(new ILanPlayerListener() {
             @Override
             public void isReady() {
-                    nextTurn();
+                nextTurn();
             }
 
             @Override
             public void connectionLost() {
-                    // TODO
+                // TODO
             }
 
             @Override
@@ -124,7 +120,6 @@ public class ConnectFourController {
                 nextTurn();
             }
         });
-        runGame();
     }
 
     /**
@@ -154,18 +149,20 @@ public class ConnectFourController {
         }
         getGameModel().setCurrentPlayer(nextPlayer);
         nextPlayer.makeMove(getGameModel().getGameBoard());
-        
+
         for (IControllerListener listener : listeners){
             listener.moveMade(this.getGameBoard(), nextPlayer.getTokenColor());
         }
     }
-    
+
+	// TODO while loop mit nextTurn() wird wohl eher nicht funktionieren.
+	// wahrscheinleich wird diese methode gar nicht gebraucht, da nextTurn() reichen sollte
     public void runGame() {
         if (this.gameModel != null && this.gameModel.getGameBoard() != null){
             while(!this.hasWinner()){
                 nextTurn();
             }
-            
+
             TokenColor winnerColor = getGameModel().getCurrentPlayer().getTokenColor();
             for (IControllerListener listener : listeners){
                 if (winnerColor.equals(thisPlayer.getTokenColor())){
