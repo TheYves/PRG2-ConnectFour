@@ -24,11 +24,20 @@ public abstract class Player
         this.tokenColor = tokenColor;
     }
 
+    public Player(TokenColor tokenColor){
+        if (tokenColor == TokenColor.None)
+            throw new NoColorException();
+        this.nickname = "Player";
+        this.tokenColor = tokenColor;
+    }
+
     public String getNickname(){
         return nickname;
     }
 
-    public abstract void makeMove(GameBoard gameBoard);
+    public void makeMove(GameBoard gameBoard) {
+        // macht nüt
+    }
 
     protected void moveMade(GameBoard gameBoard) {
 		for (IPlayerListener listener : listeners) {

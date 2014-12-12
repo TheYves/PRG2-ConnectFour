@@ -7,8 +7,10 @@ package ch.hslu.prg2.hs14.team7;
 
 import ch.hslu.prg2.hs14.team7.gui.ConnectFourGUI;
 import ch.hslu.prg2.hs14.team7.player.*;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Random;
@@ -17,222 +19,186 @@ import java.util.Random;
  * @author Nick
  */
 public class ConnectFourController {
-    private GameModel gameModel; // das model
-    private ConnectFourGUI gui;
-    private Player thisPlayer; // der Spieler, der den Controller erstellt (beim ersten Spiel auf dem UI).
+	private GameModel gameModel; // das model
+	private Player thisPlayer; // der Spieler, der den Controller erstellt (beim ersten Spiel auf dem UI).
+	private ConnectFourGUI gui;
 
-    private static final int defaultPort = 10000;
+	private static final int defaultPort = 10000;
 
-    private List<IControllerListener> listeners = new ArrayList<>();
+	private List<IControllerListener> listeners = new ArrayList<>();
 
-    public ConnectFourController(Player thisPlayer){
-        this.thisPlayer = thisPlayer;
-    }
+	public ConnectFourController() {
+	}
 
-    public void addListener(IControllerListener listener){
-        listeners.add(listener);
-    }
+	public void start() {
+		// create new model
+		gameModel = new GameModel();
 
-    /**
-     * Erstellt ein neues Spiel gege die KI.
-     *
-     * @param listener
-     * @param level
-     */
-    public void newComputerGame(IPlayerListener listener, ComputerLevel level) {
-        thisPlayer.addPlayerListener(listener);
-        TokenColor computerColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
-        gameModel = new GameModel(thisPlayer, new ComputerPlayer(level, computerColor));
-        //runGame();
-    }
+		// create new gui
+		gui = new ConnectFourGUI(this, gameModel);
 
-    /**
-     * Erstellt ein neues Spiel gegen einen lokalen Gegner
-     *
-     * @param enemyPlayer
-     */
-    public void newLocalGame(Player enemyPlayer) {
-        gameModel = new GameModel(thisPlayer, enemyPlayer);
-        runGame();
-    }
+		// show select mode dialog
+		gui.selectGameMode();
 
-    /**
-     * Verbindet den Spieler mit einem Gegner, der sich als Host zur Verfügung stellt.
-     *
-     * @param port
-     * @param ip
-     */
-    public void joinLanGame(int port, String ip) {
-        TokenColor lanColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
-        ClientLanPlayer lanPlayer = new ClientLanPlayer(port, ip, lanColor);
+		// start game
+		startGame();
+	}
 
-        gameModel = new GameModel(thisPlayer, lanPlayer);
+	private void startGame() {
+		Player thisPlayer = new LocalPlayer(TokenColor.Yellow);
+		Player enemyPlayer;
 
-        lanPlayer.addPlayerListener(new ILanPlayerListener() {
-            @Override
-            public void isReady() {
-            	nextTurn();
-            }
+		switch(gameModel.getGameMode()) {
+			/*case Computer:
+				enemyPlayer = new ComputerPlayer(TokenColor.Red);
+				break;*/
+			case Local:
+				enemyPlayer = new LocalPlayer(TokenColor.Red);
+				break;
+			/*case LANClient:
+				//TODO
+				break;
+			case LANHost:
+				//TODO
+				break;*/
+			default:
+				enemyPlayer = new LocalPlayer(TokenColor.Red);
+				break;
+		}
 
-            @Override
-            public void connectionLost() {
-                // TODO
-            }
+		thisPlayer.addPlayerListener(new IPlayerListener() {
+			@Override
+			public void moveMade(GameBoard gameBoard) {
+				gameModel.setGameBoard(gameBoard);
+				nextTurn();
+			}
+		});
 
-            @Override
-            public void moveMade(GameBoard gameBoard) {
-                ConnectFourController.this.getGameModel().setGameBoard(gameBoard);
-                nextTurn();
-            }
-        });
-        runGame();
-    }
+		enemyPlayer.addPlayerListener(new ILanPlayerListener() {
+			@Override
+			public void isReady() {
+				nextTurn();
+			}
 
-    public void hostLanGame(){
-        hostLanGame(defaultPort);
-    }
+			@Override
+			public void connectionLost() {
+				//TODO
+			}
 
-    /**
-     * Verbindet den Spieler mit einem Gegner, der sich als Host zur Verfügung stellt.
-     *
-     * @param port
-     */
-    public void hostLanGame(int port) {
-        TokenColor lanColor = thisPlayer.getTokenColor() == TokenColor.Yellow ? TokenColor.Red : TokenColor.Yellow;
-        HostLanPlayer lanPlayer = new HostLanPlayer(port, lanColor);
+			@Override
+			public void moveMade(GameBoard gameBoard) {
+				gameModel.setGameBoard(gameBoard);
+				nextTurn();
+			}
+		});
 
-        gameModel = new GameModel(thisPlayer, lanPlayer);
+		gameModel.setThisPlayer(thisPlayer);
+		gameModel.setEnemyPlayer(enemyPlayer);
 
-        lanPlayer.addPlayerListener(new ILanPlayerListener() {
-            @Override
-            public void isReady() {
-                nextTurn();
-            }
+		gui.startGame();
 
-            @Override
-            public void connectionLost() {
-                // TODO
-            }
+		if(!(enemyPlayer instanceof LanPlayer)) {
+			nextTurn();
+		}
+	}
 
-            @Override
-            public void moveMade(GameBoard gameBoard) {
-                ConnectFourController.this.getGameModel().setGameBoard(gameBoard);
-                nextTurn();
-            }
-        });
-    }
+	public void addListener(IControllerListener listener) {
+		listeners.add(listener);
+	}
 
-    /**
-     * Mapping von Spieler zur TokenColor.
-     *
-     * @param tokenColor
-     * @return Mapping von Spieler zur TokenColor.
-     */
-    public Player getPlayer(TokenColor tokenColor) {
-        if (getGameModel().getThisPlayer().getTokenColor() == tokenColor) {
-            return getGameModel().getThisPlayer();
-        } else {
-            return getGameModel().getEnemyPlayer();
-        }
-    }
 
-    public void nextTurn() {
-        // TODO: prüfen ob spieler gewonnen hat
-        Player currentPlayer = getGameModel().getCurrentPlayer();
-        Player nextPlayer;
-        Player thisPlayer = getGameModel().getThisPlayer();
-        Player enemyPlayer = getGameModel().getEnemyPlayer();
-        if (currentPlayer == null) {
-            nextPlayer = new Random().nextInt(2) == 0 ? thisPlayer : enemyPlayer;
-        } else {
-            nextPlayer = currentPlayer == thisPlayer ? enemyPlayer : thisPlayer;
-        }
-        getGameModel().setCurrentPlayer(nextPlayer);
-        nextPlayer.makeMove(getGameModel().getGameBoard());
+	/**
+	 * Mapping von Spieler zur TokenColor.
+	 *
+	 * @param tokenColor
+	 * @return Mapping von Spieler zur TokenColor.
+	 */
+	public Player getPlayer(TokenColor tokenColor) {
+		if (getGameModel().getThisPlayer().getTokenColor() == tokenColor) {
+			return getGameModel().getThisPlayer();
+		} else {
+			return getGameModel().getEnemyPlayer();
+		}
+	}
 
-        for (IControllerListener listener : listeners){
-            listener.moveMade(this.getGameBoard(), nextPlayer.getTokenColor());
-        }
-    }
+	public void nextTurn() {
+		// TODO: prüfen ob spieler gewonnen hat
+		Player currentPlayer = getGameModel().getCurrentPlayer();
+		Player nextPlayer;
+		Player thisPlayer = getGameModel().getThisPlayer();
+		Player enemyPlayer = getGameModel().getEnemyPlayer();
+		if (currentPlayer == null) {
+			nextPlayer = new Random().nextInt(2) == 0 ? thisPlayer : enemyPlayer;
+		} else {
+			nextPlayer = currentPlayer == thisPlayer ? enemyPlayer : thisPlayer;
+		}
+		getGameModel().setCurrentPlayer(nextPlayer);
 
-	// TODO while loop mit nextTurn() wird wohl eher nicht funktionieren.
-	// wahrscheinleich wird diese methode gar nicht gebraucht, da nextTurn() reichen sollte
-    public void runGame() {
-        if (this.gameModel != null && this.gameModel.getGameBoard() != null){
-            while(!this.hasWinner()){
-                nextTurn();
-            }
+		nextPlayer.makeMove(getGameModel().getGameBoard());
 
-            TokenColor winnerColor = getGameModel().getCurrentPlayer().getTokenColor();
-            for (IControllerListener listener : listeners){
-                if (winnerColor.equals(thisPlayer.getTokenColor())){
-                    listener.thisPlayerWonAGame(this.getGameBoard());
-                }
-                else{
-                    listener.enemyPlayerWonAGame(this.getGameBoard());
-                }
-            }
-        }
-        this.gameModel = null;
-    }
+		for (IControllerListener listener : listeners) {
+			listener.moveMade(this.getGameBoard(), nextPlayer);
+		}
+	}
 
-    /**
-     * @return Ob ein Spiel läuft
-     */
-    public boolean isGameRunning() {
-        return getGameModel() != null;
-    }
 
-    /**
-     * @return Ob ein Spiel einen Gewinner hat.
-     */
-    public boolean hasWinner() {
-        GameBoard gameBoard = getGameModel().getGameBoard();
-        int height = 0;
-        if (gameBoard.getBoard().length > 0) {
-                height = gameBoard.getBoard()[0].length;
-        }
+	/**
+	 * @return Ob ein Spiel läuft
+	 */
+	public boolean isGameRunning() {
+		return getGameModel() != null;
+	}
 
-        for (int column = 0; column < gameBoard.getBoard().length; column++) {
-                for (int row = 0; row < height; row++) {
-                        if (gameBoard.checkXInARow(column, row, 4, TokenColor.Yellow)
-                                        || (gameBoard.checkXInARow(column, row, 4, TokenColor.Red))) {
-                                return true;
-                        }
-                }
-        }
-        return false;
-    }
+	/**
+	 * @return Ob ein Spiel einen Gewinner hat.
+	 */
+	public boolean hasWinner() {
+		GameBoard gameBoard = getGameModel().getGameBoard();
+		int height = 0;
+		if (gameBoard.getBoard().length > 0) {
+			height = gameBoard.getBoard()[0].length;
+		}
 
-    /**
-     * @return Das Gameboard.
-     */
-    public GameBoard getGameBoard() {
-        return getGameModel().getGameBoard();
-    }
+		for (int column = 0; column < gameBoard.getBoard().length; column++) {
+			for (int row = 0; row < height; row++) {
+				if (gameBoard.checkXInARow(column, row, 4, TokenColor.Yellow)
+						|| (gameBoard.checkXInARow(column, row, 4, TokenColor.Red))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @return Den Gegenspieler.
-     */
-    public Player getEnemyPlayer() {
-        return getGameModel().getEnemyPlayer();
-    }
+	/**
+	 * @return Das Gameboard.
+	 */
+	public GameBoard getGameBoard() {
+		return getGameModel().getGameBoard();
+	}
 
-    public String serializeBoard() {
-        throw new NotImplementedException();
-    }
+	/**
+	 * @return Den Gegenspieler.
+	 */
+	public Player getEnemyPlayer() {
+		return getGameModel().getEnemyPlayer();
+	}
 
-    /**
-     * @return Den "freundlichen" Spieler.
-     */
-    public Player getThisPlayer() {
-        return getGameModel().getThisPlayer();
-    }
+	public String serializeBoard() {
+		throw new NotImplementedException();
+	}
 
-    /**
-     * @return the gameModel
-     */
-    public GameModel getGameModel() {
-        return gameModel;
-    }
+	/**
+	 * @return Den "freundlichen" Spieler.
+	 */
+	public Player getThisPlayer() {
+		return getGameModel().getThisPlayer();
+	}
+
+	/**
+	 * @return the gameModel
+	 */
+	public GameModel getGameModel() {
+		return gameModel;
+	}
 }

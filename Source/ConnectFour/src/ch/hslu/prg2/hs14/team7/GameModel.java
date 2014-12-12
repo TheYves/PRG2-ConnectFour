@@ -20,14 +20,28 @@ import java.util.Random;
  */
 public class GameModel {
     private GameBoard gameBoard;
-    private final Player thisPlayer;
-    private final Player enemyPlayer;
+    private Player thisPlayer;
+    private Player enemyPlayer;
     private Player currentPlayer;
+    private GameMode gameMode;
 
-    public GameModel(Player thisPlayer, Player enemyPlayer){
-        this.thisPlayer = thisPlayer;
-        this.enemyPlayer = enemyPlayer;
+    public enum GameMode {
+        Local,
+        Computer,
+        LANHost,
+        LANClient
+    }
+
+    public GameModel(){
         this.gameBoard = new GameBoard();
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
     }
 
     public Player getCurrentPlayer() {
@@ -54,4 +68,11 @@ public class GameModel {
         return enemyPlayer;
     }
 
+    public void setThisPlayer(Player thisPlayer) {
+        this.thisPlayer = thisPlayer;
+    }
+
+    public void setEnemyPlayer(Player enemyPlayer) {
+        this.enemyPlayer = enemyPlayer;
+    }
 }

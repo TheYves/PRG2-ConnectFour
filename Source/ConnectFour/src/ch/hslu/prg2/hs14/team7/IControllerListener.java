@@ -5,13 +5,13 @@
  */
 package ch.hslu.prg2.hs14.team7;
 
+import ch.hslu.prg2.hs14.team7.player.Player;
+
 /**
  *
  * @author Nick
  */
 public interface IControllerListener {
-    public void moveMade(GameBoard board, TokenColor tokenColor);
-    public void newGame(GameBoard board);
-    public void enemyPlayerWonAGame(GameBoard board);
-    public void thisPlayerWonAGame(GameBoard board);
+    public void moveMade(GameBoard board, Player nextPlayer);
+    public void gameFinished(GameBoard board, Player winner);
 }
