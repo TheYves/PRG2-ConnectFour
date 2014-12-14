@@ -40,13 +40,13 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 		GameModel.GameMode gameMode;
 		final JDialog modesDialog = new JDialog();
-		modesDialog.setTitle(TITLE + " - Modus ausw‰hlen");
+		modesDialog.setTitle(TITLE + " - Modus ausw√§hlen");
 		modesDialog.setModal(true);
 		modesDialog.setLayout(new GridLayout(2, 1));
 		modesDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		JPanel titlePanel = new JPanel();
-		JLabel titleabel = new JLabel("Vier Gewinnt - Bitte Spielemodus ausw‰hlen");
+		JLabel titleabel = new JLabel("Vier Gewinnt - Bitte Spielemodus ausw√§hlen");
 
 		String[] gameModes = {"Gegen Computer", "2 Spieler lokal", "LAN Server", "LAN Client"};
 		JPanel modesPanel = new JPanel();
