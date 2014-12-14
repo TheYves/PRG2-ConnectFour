@@ -6,6 +6,7 @@ import ch.hslu.prg2.hs14.team7.player.Player;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.tree.ExpandVetoException;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
@@ -19,8 +20,13 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 	public static final int WIDTH = 885;
 	public static final int HEIGHT = 634;
+	public static final int DEFAULT_PORT = 1337;
 	public static final String TITLE = "Vier Gewinnt";
 	private JFrame frame;
+	private JComboBox modesCombo;
+	private JTextField ipText;
+	private JTextField portText;
+	private JDialog modesDialog;
 
 	private Thread thread;
 	Player winner = null;
@@ -39,60 +45,75 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 	public void selectGameMode() {
 
 		GameModel.GameMode gameMode;
-		final JDialog modesDialog = new JDialog();
+		modesDialog = new JDialog();
 		modesDialog.setTitle(TITLE + " - Modus auswählen");
 		modesDialog.setModal(true);
-		modesDialog.setLayout(new GridLayout(2, 1));
 		modesDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		JPanel modesDialogPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		modesDialogPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 		JPanel titlePanel = new JPanel();
-		JLabel titleabel = new JLabel("Vier Gewinnt - Bitte Spielemodus auswählen");
+		JLabel titleLabel = new JLabel("Vier Gewinnt - Bitte Spielemodus auswählen");
 
 		String[] gameModes = {"Gegen Computer", "2 Spieler lokal", "LAN Server", "LAN Client"};
 		JPanel modesPanel = new JPanel();
 		JLabel modesLabel = new JLabel("Modus:");
-		JComboBox modesCombo = new JComboBox(gameModes);
+		modesCombo = new JComboBox(gameModes);
 
-		JButton start = new JButton("Spiel starten");
-		start.setPreferredSize(new Dimension(150, 30));
-		start.addActionListener(new ActionListener() {
+		JPanel ipPanel = new JPanel();
+		JLabel ipLabel = new JLabel("IP Adresse:");
+		ipText = new JTextField("", 12);
+		ipLabel.setLabelFor(ipText);
+		ipPanel.setVisible(false);
+
+		JPanel portPanel = new JPanel();
+		JLabel portLabel = new JLabel("Port:");
+		portText = new JTextField(DEFAULT_PORT + "", 5);
+		portLabel.setLabelFor(portText);
+		portPanel.setVisible(false);
+
+		modesCombo.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				modesDialog.dispose();
+			public void itemStateChanged(ItemEvent itemEvent) {
+				portPanel.setVisible(false);
+				ipPanel.setVisible(false);
+				switch (modesCombo.getSelectedIndex()) {
+					case 2:
+						portPanel.setVisible(true);
+						break;
+					case 3:
+						portPanel.setVisible(true);
+						ipPanel.setVisible(true);
+						break;
+				}
 			}
 		});
 
-		titlePanel.add(titleabel);
+		JButton start = new JButton("Spiel starten");
+		start.setPreferredSize(new Dimension(150, 30));
+		start.addActionListener(new StartButtonListener());
+
+		titlePanel.add(titleLabel);
 
 		modesPanel.add(modesLabel);
 		modesPanel.add(modesCombo);
-		modesPanel.add(start);
 
-		modesDialog.add(titlePanel);
-		modesDialog.add(modesPanel);
+		ipPanel.add(ipLabel);
+		ipPanel.add(ipText);
+
+		portPanel.add(portLabel);
+		portPanel.add(portText);
+
+		modesDialogPanel.add(titlePanel);
+		modesDialogPanel.add(modesPanel);
+		modesDialogPanel.add(ipPanel);
+		modesDialogPanel.add(portPanel);
+		modesDialogPanel.add(start);
+
+		modesDialog.add(modesDialogPanel);
 		modesDialog.pack();
 		modesDialog.setLocationRelativeTo(null);
 		modesDialog.setVisible(true);
-
-		switch (modesCombo.getSelectedIndex()) {
-			case 0:
-				gameMode = GameModel.GameMode.Computer;
-				break;
-			case 1:
-				gameMode = GameModel.GameMode.Local;
-				break;
-			case 2:
-				gameMode = GameModel.GameMode.LANHost;
-				break;
-			case 3:
-				gameMode = GameModel.GameMode.LANClient;
-				break;
-			default:
-				gameMode = GameModel.GameMode.Computer;
-				break;
-		}
-
-		gameModel.setGameMode(gameMode);
 	}
 
 
@@ -161,7 +182,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 	@Override
 	public void run() {
-		while(true) {
+		while (true) {
 			render();
 			try {
 				Thread.sleep(100);
@@ -186,15 +207,15 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		int foregroundOffsetX = 175;
 		int foregroundOffsetY = 156;
 		Token[][] columns = this.gameModel.getGameBoard().getBoard();
-		for (int columnCount = 0; columnCount < columns.length; columnCount++){
+		for (int columnCount = 0; columnCount < columns.length; columnCount++) {
 			Token[] currentColumn = columns[columnCount];
-			for (int rowCount = 0; rowCount < currentColumn.length; rowCount++){
+			for (int rowCount = 0; rowCount < currentColumn.length; rowCount++) {
 				Token token = currentColumn[rowCount];
 				TokenColor currentColor = token.getTokenColor();
 				BufferedImage tokenImage = null;
-				int currentRow = currentColumn.length - rowCount -1;
+				int currentRow = currentColumn.length - rowCount - 1;
 
-				switch (currentColor){
+				switch (currentColor) {
 					case Red:
 						tokenImage = tokenRed;
 						break;
@@ -203,7 +224,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 						break;
 				}
 
-				if (tokenImage != null){
+				if (tokenImage != null) {
 					g.drawImage(tokenImage, foregroundOffsetX + 20 + (70 * columnCount + 20), foregroundOffsetY + 24 + (70 * currentRow + 20), this);
 				}
 			}
@@ -235,4 +256,59 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		bs.show();
 	}
 
+	private void showError(String msg) {
+		JOptionPane.showMessageDialog(null, msg);
+	}
+
+	private class StartButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent actionEvent) {
+			GameModel.GameMode gameMode;
+			int port = 0;
+
+			switch (modesCombo.getSelectedIndex()) {
+				case 0:
+					gameMode = GameModel.GameMode.Computer;
+					break;
+				case 1:
+					gameMode = GameModel.GameMode.Local;
+					break;
+				case 2:
+					gameMode = GameModel.GameMode.LANHost;
+					break;
+				case 3:
+					gameMode = GameModel.GameMode.LANClient;
+					gameModel.setIp(ipText.getText());
+					break;
+				default:
+					gameMode = GameModel.GameMode.Computer;
+					break;
+			}
+			gameModel.setGameMode(gameMode);
+
+			// prüfen ob port zahl ist
+			if (gameMode == GameModel.GameMode.LANClient || gameMode == GameModel.GameMode.LANHost) {
+				try {
+					port = Integer.parseInt(portText.getText());
+					if(port < 1024 || port > 65535) {
+						throw new Exception();
+					}
+				} catch (Exception e) {
+					showError("Bitte gültigen Port zwischen 1024 und 65535 angeben.");
+					return;
+				}
+			}
+			gameModel.setPort(port);
+
+			// prüfen ob ip/host angegeben wurde
+			if (gameMode == GameModel.GameMode.LANClient && ipText.getText().length() <= 0) {
+				showError("Bitte IP oder Hostname angeben.");
+				return;
+			}
+			gameModel.setIp(ipText.getText());
+
+			modesDialog.dispose();
+		}
+	}
 }

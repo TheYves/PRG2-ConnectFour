@@ -24,6 +24,8 @@ public class GameModel {
     private Player enemyPlayer;
     private Player currentPlayer;
     private GameMode gameMode;
+    private String ip;
+    private int port;
 
     public enum GameMode {
         Local,
@@ -74,5 +76,21 @@ public class GameModel {
 
     public void setEnemyPlayer(Player enemyPlayer) {
         this.enemyPlayer = enemyPlayer;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }

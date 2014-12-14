@@ -56,7 +56,7 @@ public class GameBoard implements Serializable {
   {
     for (int j = 0; j < nrOfTokens; j++)
     {
-        int adjacentSameTokens = 1;
+        int adjacentSameTokens = 0;
         for (int i = 0; i < nrOfTokens; i++)
         {
             if ((col + i - j) >= 0 && (col + i - j) < board.length
@@ -77,7 +77,7 @@ public class GameBoard implements Serializable {
   {
     for (int j = 0; j < nrOfTokens; j++)
     {
-        int adjacentSameTokens = 1;
+        int adjacentSameTokens = 0;
         for (int i = 0; i < nrOfTokens; i++)
         {
             if ((col - i + j) >= 0 && (col - i + j) < board.length
@@ -98,7 +98,7 @@ public class GameBoard implements Serializable {
     {
         for (int j = 0; j < nrOfTokens; j++)
         {
-            int adjacentSameTokens = 1;
+            int adjacentSameTokens = 0;
             for (int i = 0; i < nrOfTokens; i++)
             {
                 if ((col + i - j) >= 0 && (col + i - j) < board.length
@@ -117,7 +117,7 @@ public class GameBoard implements Serializable {
     {
         for (int j = 0; j < nrOfTokens; j++)
         {
-            int adjacentSameTokens = 1;
+            int adjacentSameTokens = 0;
             for (int i = 0; i < nrOfTokens; i++)
             {
                 if ((row + i - j) >= 0 && (row + i - j) < board[col].length

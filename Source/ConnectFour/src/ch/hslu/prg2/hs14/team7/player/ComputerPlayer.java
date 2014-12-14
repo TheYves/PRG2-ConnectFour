@@ -37,7 +37,6 @@ public class ComputerPlayer extends Player {
         if (this.level == ComputerLevel.Low)
         {
             return grn.nextInt(board.length);
-            // TODO super.moveMade(gameboard);
         }
         else
         {
@@ -51,7 +50,6 @@ public class ComputerPlayer extends Player {
             if (gameBoard.isBoardEmpty())
             {
                 return (int)(board.length / 2) + 1;
-                // TODO super.moveMade(gameboard);
             }
 
             // Finaler Zug?
@@ -61,7 +59,6 @@ public class ComputerPlayer extends Player {
                 if (row != -1 && gameBoard.checkXInARow(column, row, 4, getTokenColor()))
                 {
                     return column; // Gewonnen
-                    // TODO super.moveMade(gameboard);
                 }
             }
 
@@ -72,7 +69,6 @@ public class ComputerPlayer extends Player {
                 if (row != -1 && gameBoard.checkXInARow(column, row, 4, getEnemyColor()))
                 {
                     return column;
-                    // TODO super.moveMade(gameboard);
                 }
             }
 
@@ -122,13 +118,11 @@ public class ComputerPlayer extends Player {
             {
                 Collections.shuffle(possibleSolutions);
                 return (int)possibleSolutions.get(0);
-                // TODO super.moveMade(gameboard);
             }
             
             if (this.level == ComputerLevel.Medium)
             {
                 return grn.nextInt(board.length);
-                // TODO super.moveMade(gameboard);
             }
 
             if (this.level == ComputerLevel.High)
@@ -159,7 +153,6 @@ public class ComputerPlayer extends Player {
                     while (board[column][topRow].getTokenColor() != TokenColor.None);
 
                     return column;
-                    // TODO super.moveMade(gameboard);
                   }
                 else
                 {
@@ -171,11 +164,9 @@ public class ComputerPlayer extends Player {
                 }
 
                 return column;
-                // TODO super.moveMade(gameboard);
             }
         }
         
         return grn.nextInt(board.length);
-        // TODO super.moveMade(gameboard);
     }
 }

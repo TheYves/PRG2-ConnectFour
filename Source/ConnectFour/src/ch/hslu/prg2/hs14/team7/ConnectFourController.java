@@ -11,20 +11,15 @@ import ch.hslu.prg2.hs14.team7.player.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.Random;
 
 /**
  * @author Nick
  */
 public class ConnectFourController {
+
 	private GameModel gameModel; // das model
-	private Player thisPlayer; // der Spieler, der den Controller erstellt (beim ersten Spiel auf dem UI).
 	private ConnectFourGUI gui;
-
-	private static final int defaultPort = 10000;
-
 	private List<IControllerListener> listeners = new ArrayList<>();
 
 	public ConnectFourController() {
@@ -55,12 +50,12 @@ public class ConnectFourController {
 			case Local:
 				enemyPlayer = new LocalPlayer("Player 2", TokenColor.Red);
 				break;
-			/*case LANClient:
-				//TODO
+			case LANClient:
+				enemyPlayer = new ClientLanPlayer(gameModel.getPort(), gameModel.getIp(), TokenColor.Red);
 				break;
 			case LANHost:
-				//TODO
-				break;*/
+				enemyPlayer = new HostLanPlayer(gameModel.getPort(), TokenColor.Red);
+				break;
 			default:
 				enemyPlayer = new LocalPlayer("Player 2", TokenColor.Red);
 				break;
@@ -125,6 +120,8 @@ public class ConnectFourController {
 		// game finished?
 		Player winner = getWinner();
 		if (winner != null) {
+			gameModel.setCurrentPlayer(null);
+
 			// inform ui about winner
 			for (IControllerListener listener : listeners) {
 				listener.gameFinished(this.getGameBoard(), winner);
@@ -177,14 +174,6 @@ public class ConnectFourController {
 	 */
 	public GameBoard getGameBoard() {
 		return getGameModel().getGameBoard();
-	}
-
-
-	/**
-	 * @return Den "freundlichen" Spieler.
-	 */
-	public Player getThisPlayer() {
-		return getGameModel().getThisPlayer();
 	}
 
 	/**
