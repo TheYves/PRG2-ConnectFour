@@ -25,6 +25,7 @@ public class HostLanPlayer extends LanPlayer implements Runnable {
 	public void run() {
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
+			System.out.println("HostLanPlayer: Socket open. Waiting for player...");
 			Socket socket = serverSocket.accept();
 			System.out.println("HostLanPlayer: Client connected.");
 			setSocket(socket);

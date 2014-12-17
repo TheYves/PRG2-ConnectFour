@@ -6,7 +6,6 @@ import ch.hslu.prg2.hs14.team7.player.Player;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.tree.ExpandVetoException;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
@@ -32,7 +31,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 	Player winner = null;
 
 	private BufferedImage background, overlay, grid, turnYellow, turnRed, turnComputer, wonRed, wonYellow,
-			wonComputer, tokenRed, tokenYellow;
+			wonComputer, tokenRed, tokenYellow, connectionLost, waitForPlayer;
 
 	private GameModel gameModel;
 	private ConnectFourController controller;
@@ -136,12 +135,12 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
 				super.keyTyped(keyEvent);
-				if (gameModel.getCurrentPlayer() instanceof LocalPlayer) {
+				if (gameModel.getGameState() == GameModel.GameState.Ready) {
 					char charcharBings = keyEvent.getKeyChar();
 					if (Character.isDigit(charcharBings)) {
 						int col = Character.getNumericValue(charcharBings) - 1;
 						if (col >= 0 && col < gameModel.getGameBoard().getBoard().length) {
-							((LocalPlayer) gameModel.getCurrentPlayer()).chooseColumn(col);
+							gameModel.getCurrentPlayer().chooseColumn(col);
 						}
 					}
 
@@ -161,16 +160,11 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			wonComputer = ImageIO.read(getClass().getResource("resources/end_computer.png"));
 			tokenRed = ImageIO.read(getClass().getResource("resources/token_red.png"));
 			tokenYellow = ImageIO.read(getClass().getResource("resources/token_yellow.png"));
+			connectionLost = ImageIO.read(getClass().getResource("resources/connection_lost.png"));
+			waitForPlayer = ImageIO.read(getClass().getResource("resources/wait_for_player.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		controller.addListener(new IControllerListener() {
-			@Override
-			public void gameFinished(GameBoard board, Player winner) {
-				ConnectFourGUI.this.winner = winner;
-			}
-		});
 
 		start();
 	}
@@ -232,24 +226,27 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 		g.drawImage(grid, foregroundOffsetX, foregroundOffsetY, this);
 
-		if (winner != null) {
-			switch (winner.getTokenColor()) {
-				case Yellow:
+		switch (gameModel.getGameState()) {
+			case GameOver:
+				if (gameModel.getWinner().getTokenColor() == TokenColor.Yellow) {
 					g.drawImage(wonYellow, 20, 10, this);
-					break;
-				case Red:
+				} else {
 					g.drawImage(wonRed, 20, 10, this);
-					break;
-			}
-		} else {
-			switch (gameModel.getCurrentPlayer().getTokenColor()) {
-				case Yellow:
+				}
+				break;
+			case Disconnected:
+				g.drawImage(connectionLost, 20, 10, this);
+				break;
+			case Ready:
+				if (gameModel.getCurrentPlayer().getTokenColor() == TokenColor.Yellow) {
 					g.drawImage(turnYellow, 20, 10, this);
-					break;
-				case Red:
+				} else {
 					g.drawImage(turnRed, 20, 10, this);
-					break;
-			}
+				}
+				break;
+			case WaitForPlayer:
+				g.drawImage(waitForPlayer, 20, 10, this);
+				break;
 		}
 
 		g.dispose();
@@ -291,7 +288,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			if (gameMode == GameModel.GameMode.LANClient || gameMode == GameModel.GameMode.LANHost) {
 				try {
 					port = Integer.parseInt(portText.getText());
-					if(port < 1024 || port > 65535) {
+					if (port < 1024 || port > 65535) {
 						throw new Exception();
 					}
 				} catch (Exception e) {

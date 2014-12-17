@@ -10,45 +10,36 @@ import ch.hslu.prg2.hs14.team7.TokenColor;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Nick
  */
 public abstract class LanPlayer extends Player {
 
-	private TokenColor tokenColor;
 	private Socket socket;
-	protected List<ILanPlayerListener> lanListeners = new ArrayList<>();
 
 	public LanPlayer(TokenColor tokenColor) {
 		super("LAN Player", tokenColor);
-		this.tokenColor = tokenColor;
 	}
 
 	protected void setSocket(Socket socket) {
 		this.socket = socket;
 	}
 
-	public void addPlayerListener(ILanPlayerListener listener) {
-		lanListeners.add(listener);
-	}
-
 	protected void isReady() {
-		for (ILanPlayerListener listener : lanListeners) {
+		for (IPlayerListener listener : getListeners()) {
 			listener.isReady();
 		}
 	}
 
 	protected void connectionLost() {
-		for (ILanPlayerListener listener : lanListeners) {
+		for (IPlayerListener listener : getListeners()) {
 			listener.connectionLost();
 		}
 	}
 
 	protected void moveMade(GameBoard gameBoard) {
-		for (ILanPlayerListener listener : lanListeners) {
+		for (IPlayerListener listener : getListeners()) {
 			listener.moveMade(gameBoard);
 		}
 	}
@@ -90,7 +81,6 @@ public abstract class LanPlayer extends Player {
 					ObjectInputStream oos = new ObjectInputStream(socket.getInputStream());
 					GameBoard gameBoard = (GameBoard) oos.readObject();
 					moveMade(gameBoard);
-					break;
 				} catch (IOException e) {
 					e.printStackTrace();
 					connectionLost();
@@ -98,8 +88,27 @@ public abstract class LanPlayer extends Player {
 					e.printStackTrace();
 					connectionLost();
 				}
+				break;
 			}
 		}
 	}
 
+	private class NetworkModelWrapper implements Serializable {
+
+		private final GameBoard gameBoard;
+		private final boolean doNextTurn;
+
+		public NetworkModelWrapper(GameBoard gameBoard, boolean doNextTurn) {
+			this.gameBoard = gameBoard;
+			this.doNextTurn = doNextTurn;
+		}
+
+		public GameBoard getGameBoard() {
+			return gameBoard;
+		}
+
+		public boolean isDoNextTurn() {
+			return doNextTurn;
+		}
+	}
 }

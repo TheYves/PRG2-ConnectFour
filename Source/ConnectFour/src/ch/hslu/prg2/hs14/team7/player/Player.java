@@ -16,6 +16,7 @@ public abstract class Player
     protected String nickname = "Player";
     private TokenColor tokenColor;
     private List<IPlayerListener> listeners = new ArrayList<>();
+    private GameBoard gameBoard;
 
     public Player(String nickname, TokenColor tokenColor){
         if (tokenColor == TokenColor.None)
@@ -29,7 +30,13 @@ public abstract class Player
     }
 
     public void makeMove(GameBoard gameBoard) {
-        // macht nüt
+        this.gameBoard = gameBoard;
+    }
+
+    public void chooseColumn(int col) {
+        if(gameBoard.insertToken(col, getTokenColor())) {
+            moveMade(gameBoard);
+        }
     }
 
     protected void moveMade(GameBoard gameBoard) {

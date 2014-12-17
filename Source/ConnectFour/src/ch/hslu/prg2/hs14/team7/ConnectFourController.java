@@ -20,7 +20,6 @@ public class ConnectFourController {
 
 	private GameModel gameModel; // das model
 	private ConnectFourGUI gui;
-	private List<IControllerListener> listeners = new ArrayList<>();
 
 	public ConnectFourController() {
 	}
@@ -40,8 +39,9 @@ public class ConnectFourController {
 	}
 
 	private void startGame() {
-		Player thisPlayer = new LocalPlayer("Player 1", TokenColor.Yellow);
+		gameModel.setGameState(GameModel.GameState.WaitForPlayer);
 		Player enemyPlayer;
+		TokenColor thisPlayerTokenColor = TokenColor.Yellow;
 
 		switch (gameModel.getGameMode()) {
 			case Computer:
@@ -51,7 +51,8 @@ public class ConnectFourController {
 				enemyPlayer = new LocalPlayer("Player 2", TokenColor.Red);
 				break;
 			case LANClient:
-				enemyPlayer = new ClientLanPlayer(gameModel.getPort(), gameModel.getIp(), TokenColor.Red);
+				enemyPlayer = new ClientLanPlayer(gameModel.getPort(), gameModel.getIp(), TokenColor.Yellow);
+				thisPlayerTokenColor = TokenColor.Red;
 				break;
 			case LANHost:
 				enemyPlayer = new HostLanPlayer(gameModel.getPort(), TokenColor.Red);
@@ -61,23 +62,39 @@ public class ConnectFourController {
 				break;
 		}
 
+		Player thisPlayer = new LocalPlayer("Player 1", thisPlayerTokenColor);
+
 		thisPlayer.addPlayerListener(new IPlayerListener() {
 			@Override
 			public void moveMade(GameBoard gameBoard) {
 				gameModel.setGameBoard(gameBoard);
 				nextTurn();
 			}
-		});
 
-		enemyPlayer.addPlayerListener(new ILanPlayerListener() {
 			@Override
 			public void isReady() {
-				nextTurn();
 			}
 
 			@Override
 			public void connectionLost() {
-				//TODO
+			}
+		});
+
+		enemyPlayer.addPlayerListener(new IPlayerListener() {
+			@Override
+			public void isReady() {
+				if (enemyPlayer instanceof ClientLanPlayer) {
+					nextTurn(enemyPlayer);
+				} else if (enemyPlayer instanceof HostLanPlayer) {
+					nextTurn(thisPlayer);
+				} else {
+					nextTurn();
+				}
+			}
+
+			@Override
+			public void connectionLost() {
+				gameModel.setGameState(GameModel.GameState.Disconnected);
 			}
 
 			@Override
@@ -92,15 +109,11 @@ public class ConnectFourController {
 
 		gui.startGame();
 
+		// weil die lokalen spieler isReady() nie aufrufen
 		if (!(enemyPlayer instanceof LanPlayer)) {
 			nextTurn();
 		}
 	}
-
-	public void addListener(IControllerListener listener) {
-		listeners.add(listener);
-	}
-
 
 	/**
 	 * Mapping von Spieler zur TokenColor.
@@ -117,28 +130,29 @@ public class ConnectFourController {
 	}
 
 	public void nextTurn() {
+		Player currentPlayer = gameModel.getCurrentPlayer();
+		Player nextPlayer;
+		Player thisPlayer = gameModel.getThisPlayer();
+		Player enemyPlayer = gameModel.getEnemyPlayer();
+
+		// if there's no current player, we randomly choose one
+		if (currentPlayer == null) {
+			nextPlayer = new Random().nextInt(2) == 0 ? thisPlayer : enemyPlayer;
+		} else {
+			nextPlayer = currentPlayer == thisPlayer ? enemyPlayer : thisPlayer;
+		}
+
+		nextTurn(nextPlayer);
+	}
+
+	public void nextTurn(Player nextPlayer) {
 		// game finished?
 		Player winner = getWinner();
 		if (winner != null) {
-			gameModel.setCurrentPlayer(null);
-
-			// inform ui about winner
-			for (IControllerListener listener : listeners) {
-				listener.gameFinished(this.getGameBoard(), winner);
-			}
+			gameModel.setGameState(GameModel.GameState.GameOver);
+			gameModel.setWinner(winner);
 		} else {
-
-			Player currentPlayer = gameModel.getCurrentPlayer();
-			Player nextPlayer;
-			Player thisPlayer = gameModel.getThisPlayer();
-			Player enemyPlayer = gameModel.getEnemyPlayer();
-
-			// if there's no current player, we randomly choose one
-			if (currentPlayer == null) {
-				nextPlayer = new Random().nextInt(2) == 0 ? thisPlayer : enemyPlayer;
-			} else {
-				nextPlayer = currentPlayer == thisPlayer ? enemyPlayer : thisPlayer;
-			}
+			gameModel.setGameState(GameModel.GameState.Ready);
 			gameModel.setCurrentPlayer(nextPlayer);
 
 			// inform player that he has to make the next move

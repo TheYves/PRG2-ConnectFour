@@ -14,21 +14,8 @@ import ch.hslu.prg2.hs14.team7.TokenColor;
  */
 public class LocalPlayer extends Player {
 
-    GameBoard gameBoard;
-
     public LocalPlayer(String nickname, TokenColor tokenColor) {
         super(nickname, tokenColor);
-    }
-
-    @Override
-    public void makeMove(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
-    }
-
-    public void chooseColumn(int col) {
-        if(gameBoard.insertToken(col, getTokenColor())) {
-            moveMade(gameBoard);
-        }
     }
 
 }

@@ -5,14 +5,7 @@
  */
 package ch.hslu.prg2.hs14.team7;
 
-import ch.hslu.prg2.hs14.team7.player.ILanPlayerListener;
-import ch.hslu.prg2.hs14.team7.player.IPlayerListener;
-import ch.hslu.prg2.hs14.team7.player.LanPlayer;
 import ch.hslu.prg2.hs14.team7.player.Player;
-import java.util.Observable;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.Random;
 
 /**
  *
@@ -23,7 +16,9 @@ public class GameModel {
     private Player thisPlayer;
     private Player enemyPlayer;
     private Player currentPlayer;
+    private Player winner;
     private GameMode gameMode;
+    private GameState gameState;
     private String ip;
     private int port;
 
@@ -32,6 +27,13 @@ public class GameModel {
         Computer,
         LANHost,
         LANClient
+    }
+
+    public enum GameState {
+        Ready,
+        WaitForPlayer,
+        Disconnected,
+        GameOver
     }
 
     public GameModel(){
@@ -92,5 +94,21 @@ public class GameModel {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 }
