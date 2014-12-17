@@ -1,7 +1,6 @@
 package ch.hslu.prg2.hs14.team7.gui;
 
 import ch.hslu.prg2.hs14.team7.*;
-import ch.hslu.prg2.hs14.team7.player.LocalPlayer;
 import ch.hslu.prg2.hs14.team7.player.Player;
 
 import javax.imageio.ImageIO;
@@ -28,7 +27,6 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 	private JDialog modesDialog;
 
 	private Thread thread;
-	Player winner = null;
 
 	private BufferedImage background, overlay, grid, turnYellow, turnRed, turnComputer, wonRed, wonYellow,
 			wonComputer, tokenRed, tokenYellow, connectionLost, waitForPlayer;
@@ -131,22 +129,8 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
-		frame.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent keyEvent) {
-				super.keyTyped(keyEvent);
-				if (gameModel.getGameState() == GameModel.GameState.Ready) {
-					char charcharBings = keyEvent.getKeyChar();
-					if (Character.isDigit(charcharBings)) {
-						int col = Character.getNumericValue(charcharBings) - 1;
-						if (col >= 0 && col < gameModel.getGameBoard().getBoard().length) {
-							gameModel.getCurrentPlayer().chooseColumn(col);
-						}
-					}
-
-				}
-			}
-		});
+		addKeyListener(new GUIKeyListener());
+		frame.addKeyListener(new GUIKeyListener());
 
 		try {
 			background = ImageIO.read(getClass().getResource("resources/background.jpg"));
@@ -306,6 +290,23 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			gameModel.setIp(ipText.getText());
 
 			modesDialog.dispose();
+		}
+	}
+
+	private class GUIKeyListener extends KeyAdapter {
+		@Override
+		public void keyTyped(KeyEvent keyEvent) {
+			super.keyTyped(keyEvent);
+			if (gameModel.getGameState() == GameModel.GameState.Ready) {
+				char charcharBings = keyEvent.getKeyChar();
+				if (Character.isDigit(charcharBings)) {
+					int col = Character.getNumericValue(charcharBings) - 1;
+					if (col >= 0 && col < gameModel.getGameBoard().getBoard().length) {
+						gameModel.getCurrentPlayer().chooseColumn(col);
+					}
+				}
+
+			}
 		}
 	}
 }

@@ -93,22 +93,4 @@ public abstract class LanPlayer extends Player {
 		}
 	}
 
-	private class NetworkModelWrapper implements Serializable {
-
-		private final GameBoard gameBoard;
-		private final boolean doNextTurn;
-
-		public NetworkModelWrapper(GameBoard gameBoard, boolean doNextTurn) {
-			this.gameBoard = gameBoard;
-			this.doNextTurn = doNextTurn;
-		}
-
-		public GameBoard getGameBoard() {
-			return gameBoard;
-		}
-
-		public boolean isDoNextTurn() {
-			return doNextTurn;
-		}
-	}
 }
