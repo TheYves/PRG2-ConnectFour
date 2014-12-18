@@ -30,6 +30,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 	private BufferedImage background, overlay, grid, turnYellow, turnRed, turnComputer, turnMe, wonRed, wonYellow,
 			wonComputer, tokenRed, tokenYellow, connectionLost, waitForPlayer;
+        private ImageIcon jarJarBinks;
 
 	private GameModel gameModel;
 
@@ -118,18 +119,6 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 		GridLayout layout = new GridLayout(1, 2);
 		layout.setHgap(20);
 
-		frame = new JFrame(TITLE);
-		frame.setLayout(layout);
-		frame.add(this);
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(false);
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-
-		addKeyListener(new GUIKeyListener());
-		frame.addKeyListener(new GUIKeyListener());
-
 		try {
 			background = ImageIO.read(getClass().getResource("resources/background.jpg"));
 			overlay = ImageIO.read(getClass().getResource("resources/overlay.png"));
@@ -145,9 +134,23 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			tokenYellow = ImageIO.read(getClass().getResource("resources/token_yellow.png"));
 			connectionLost = ImageIO.read(getClass().getResource("resources/connection_lost.png"));
 			waitForPlayer = ImageIO.read(getClass().getResource("resources/wait_for_player.png"));
+                        jarJarBinks = new ImageIcon(getClass().getResource("resources/Jar Jar Binks.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		frame = new JFrame(TITLE);
+		frame.setLayout(layout);
+		frame.add(this);
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+                frame.setIconImage(jarJarBinks.getImage());
+		frame.setVisible(true);
+
+		addKeyListener(new GUIKeyListener());
+		frame.addKeyListener(new GUIKeyListener());
 
 		start();
 	}
