@@ -1,16 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ch.hslu.prg2.hs14.team7;
 
 import ch.hslu.prg2.hs14.team7.gui.ConnectFourGUI;
 import ch.hslu.prg2.hs14.team7.player.*;
-import com.sun.deploy.util.SessionState;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import java.util.Random;
 
@@ -147,8 +138,10 @@ public class ConnectFourController {
 		Player winner = getWinner();
 		if (winner != null) {
 			gameModel.setGameState(GameModel.GameState.GameOver);
-			nextPlayer.makeMove(gameModel.getGameBoard());
 			gameModel.setWinner(winner);
+			if(gameModel.getEnemyPlayer() instanceof LanPlayer) {
+				nextPlayer.makeMove(gameModel.getGameBoard());
+			}
 		} else {
 			gameModel.setGameState(GameModel.GameState.Ready);
 			gameModel.setCurrentPlayer(nextPlayer);
@@ -179,13 +172,6 @@ public class ConnectFourController {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * @return Das Gameboard.
-	 */
-	public GameBoard getGameBoard() {
-		return getGameModel().getGameBoard();
 	}
 
 	/**

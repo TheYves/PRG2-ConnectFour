@@ -1,7 +1,6 @@
 package ch.hslu.prg2.hs14.team7.player;
 
 import ch.hslu.prg2.hs14.team7.GameBoard;
-import ch.hslu.prg2.hs14.team7.NoColorException;
 import ch.hslu.prg2.hs14.team7.TokenColor;
 
 import java.util.ArrayList;
@@ -19,14 +18,8 @@ public abstract class Player
     private GameBoard gameBoard;
 
     public Player(String nickname, TokenColor tokenColor){
-        if (tokenColor == TokenColor.None)
-            throw new NoColorException();
         this.nickname = nickname;
         this.tokenColor = tokenColor;
-    }
-
-    public String getNickname(){
-        return nickname;
     }
 
     public void makeMove(GameBoard gameBoard) {
