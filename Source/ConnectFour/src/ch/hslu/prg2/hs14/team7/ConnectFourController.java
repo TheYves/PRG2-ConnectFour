@@ -7,6 +7,7 @@ package ch.hslu.prg2.hs14.team7;
 
 import ch.hslu.prg2.hs14.team7.gui.ConnectFourGUI;
 import ch.hslu.prg2.hs14.team7.player.*;
+import com.sun.deploy.util.SessionState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,12 +84,8 @@ public class ConnectFourController {
 		enemyPlayer.addPlayerListener(new IPlayerListener() {
 			@Override
 			public void isReady() {
-				if (enemyPlayer instanceof ClientLanPlayer) {
+				if (enemyPlayer instanceof HostLanPlayer) {
 					nextTurn(enemyPlayer);
-				} else if (enemyPlayer instanceof HostLanPlayer) {
-					nextTurn(thisPlayer);
-				} else {
-					nextTurn();
 				}
 			}
 
@@ -150,6 +147,7 @@ public class ConnectFourController {
 		Player winner = getWinner();
 		if (winner != null) {
 			gameModel.setGameState(GameModel.GameState.GameOver);
+			nextPlayer.makeMove(gameModel.getGameBoard());
 			gameModel.setWinner(winner);
 		} else {
 			gameModel.setGameState(GameModel.GameState.Ready);

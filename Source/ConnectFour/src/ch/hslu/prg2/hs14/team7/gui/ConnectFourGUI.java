@@ -1,7 +1,7 @@
 package ch.hslu.prg2.hs14.team7.gui;
 
 import ch.hslu.prg2.hs14.team7.*;
-import ch.hslu.prg2.hs14.team7.player.Player;
+import ch.hslu.prg2.hs14.team7.player.LanPlayer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -28,7 +28,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 
 	private Thread thread;
 
-	private BufferedImage background, overlay, grid, turnYellow, turnRed, turnComputer, wonRed, wonYellow,
+	private BufferedImage background, overlay, grid, turnYellow, turnRed, turnComputer, turnMe, wonRed, wonYellow,
 			wonComputer, tokenRed, tokenYellow, connectionLost, waitForPlayer;
 
 	private GameModel gameModel;
@@ -139,6 +139,7 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			turnYellow = ImageIO.read(getClass().getResource("resources/turn_yellow.png"));
 			turnRed = ImageIO.read(getClass().getResource("resources/turn_red.png"));
 			turnComputer = ImageIO.read(getClass().getResource("resources/turn_computer.png"));
+			turnMe = ImageIO.read(getClass().getResource("resources/turn_me.png"));
 			wonYellow = ImageIO.read(getClass().getResource("resources/end_yellow.png"));
 			wonRed = ImageIO.read(getClass().getResource("resources/end_red.png"));
 			wonComputer = ImageIO.read(getClass().getResource("resources/end_computer.png"));
@@ -222,10 +223,14 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 				g.drawImage(connectionLost, 20, 10, this);
 				break;
 			case Ready:
-				if (gameModel.getCurrentPlayer().getTokenColor() == TokenColor.Yellow) {
-					g.drawImage(turnYellow, 20, 10, this);
+				if (gameModel.getCurrentPlayer().equals(gameModel.getThisPlayer()) && gameModel.getEnemyPlayer() instanceof LanPlayer) {
+					g.drawImage(turnMe, 20, 10, this);
 				} else {
-					g.drawImage(turnRed, 20, 10, this);
+					if (gameModel.getCurrentPlayer().getTokenColor() == TokenColor.Yellow) {
+						g.drawImage(turnYellow, 20, 10, this);
+					} else {
+						g.drawImage(turnRed, 20, 10, this);
+					}
 				}
 				break;
 			case WaitForPlayer:
