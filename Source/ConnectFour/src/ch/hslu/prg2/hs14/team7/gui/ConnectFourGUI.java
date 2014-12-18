@@ -32,11 +32,9 @@ public class ConnectFourGUI extends Canvas implements Runnable {
 			wonComputer, tokenRed, tokenYellow, connectionLost, waitForPlayer;
 
 	private GameModel gameModel;
-	private ConnectFourController controller;
 
-	public ConnectFourGUI(ConnectFourController ctrl, GameModel gameModel) {
+	public ConnectFourGUI(GameModel gameModel) {
 		this.gameModel = gameModel;
-		this.controller = ctrl;
 	}
 
 	public void selectGameMode() {

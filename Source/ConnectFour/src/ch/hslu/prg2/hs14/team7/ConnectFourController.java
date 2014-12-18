@@ -21,7 +21,7 @@ public class ConnectFourController {
 		gameModel = new GameModel();
 
 		// create new gui
-		gui = new ConnectFourGUI(this, gameModel);
+		gui = new ConnectFourGUI(gameModel);
 
 		// show select mode dialog
 		gui.selectGameMode();
